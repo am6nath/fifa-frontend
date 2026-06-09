@@ -53,7 +53,13 @@ body.fifa-theme {
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
-  background-image: none; /* Removed dark mode gradients */
+  
+  /* Football based theme background - stadium overlay */
+  background-image: linear-gradient(rgba(249, 250, 251, 0.93), rgba(249, 250, 251, 0.93)), url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=1920&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 h1, h2, h3, h4, h5, h6 {

@@ -5,17 +5,17 @@
       <p>Configure live fan polls, regional restrictions, and candidate lists</p>
     </div>
     <div class="header-actions">
-      <button class="btn btn-primary btn-sm" (click)="openCreateModal()">＋ Create New Session</button>
+      <button class="btn btn-primary btn-sm" (click)="openCreateModal()">+ Create New Session</button>
       <a routerLink="/admin" class="btn btn-secondary btn-sm">Admin Dashboard</a>
     </div>
   </div>
 
   <div *ngIf="successMessage" class="alert alert-success mb-4">
-    <span>✅ {{ successMessage }}</span>
+    <span>{{ successMessage }}</span>
   </div>
 
   <div *ngIf="errorMessage" class="alert alert-danger mb-4">
-    <span>⚠️ {{ errorMessage }}</span>
+    <span>{{ errorMessage }}</span>
   </div>
 
   <app-loader *ngIf="isLoading" message="Loading voting sessions..."></app-loader>
@@ -38,10 +38,10 @@
         <tr *ngFor="let session of sessions">
           <td>
             <strong class="session-table-title">{{ session.title }}</strong>
-            <p class="session-table-desc">{{ session.description }}</p>
+            <p class="session-table-desc" *ngIf="session.notes">{{ session.notes }}</p>
           </td>
-          <td><span class="text-mono">{{ session.startTime | date:'short' }}</span></td>
-          <td><span class="text-mono">{{ session.endTime | date:'short' }}</span></td>
+          <td><span class="text-mono">{{ session.votingStartAt | date:'short' }}</span></td>
+          <td><span class="text-mono">{{ session.votingEndAt | date:'short' }}</span></td>
           <td>
             <span class="badge badge-warning" *ngIf="session.regionFilter">{{ session.regionFilter }} Only</span>
             <span class="badge badge-info" *ngIf="session.teamIds && session.teamIds.length > 0">Subset ({{ session.teamIds.length }} Teams)</span>
@@ -56,18 +56,18 @@
             </span>
           </td>
           <td>
-            <span class="badge" [class.badge-success]="session.isPublished" [class.badge-secondary]="!session.isPublished">
-              {{ session.isPublished ? 'Yes' : 'No' }}
+            <span class="badge" [class.badge-success]="session.resultsPublished" [class.badge-secondary]="!session.resultsPublished">
+              {{ session.resultsPublished ? 'Yes' : 'No' }}
             </span>
           </td>
           <td class="text-right actions-cell">
             <button class="btn btn-danger btn-sm" *ngIf="session.status === 'Active'" (click)="closeSession(session.id)">
               Close Session
             </button>
-            <button class="btn btn-accent btn-sm" *ngIf="session.status === 'Closed' && !session.isPublished" (click)="publishSession(session.id)">
+            <button class="btn btn-accent btn-sm" *ngIf="session.status === 'Closed' && !session.resultsPublished" (click)="publishSession(session.id)">
               Publish Results
             </button>
-            <a [routerLink]="['/results', session.id]" class="btn btn-secondary btn-sm" *ngIf="session.isPublished">
+            <a [routerLink]="['/results', session.id]" class="btn btn-secondary btn-sm" *ngIf="session.resultsPublished">
               View Results
             </a>
             <a [routerLink]="['/results', session.id]" [queryParams]="{live: 'true'}" class="btn btn-secondary btn-sm" *ngIf="session.status === 'Active'">
@@ -97,27 +97,24 @@
         </div>
 
         <div class="form-group">
-          <label for="description" class="form-label">Description / Question</label>
-          <textarea id="description" formControlName="description" class="form-control" placeholder="e.g. Who do you think will lift the trophy?"></textarea>
-          <div *ngIf="sessionForm.get('description')?.invalid && sessionForm.get('description')?.touched" class="form-error">
-            <span *ngIf="sessionForm.get('description')?.errors?.['required']">Description is required.</span>
-          </div>
+          <label for="notes" class="form-label">Notes / Question (Optional)</label>
+          <textarea id="notes" formControlName="notes" class="form-control" placeholder="e.g. Who do you think will lift the trophy?"></textarea>
         </div>
 
         <div class="form-row">
           <div class="form-group half-width">
-            <label for="startTime" class="form-label">Start Date & Time</label>
-            <input type="datetime-local" id="startTime" formControlName="startTime" class="form-control">
-            <div *ngIf="sessionForm.get('startTime')?.invalid && sessionForm.get('startTime')?.touched" class="form-error">
-              <span *ngIf="sessionForm.get('startTime')?.errors?.['required']">Start time is required.</span>
+            <label for="votingStartAt" class="form-label">Start Date & Time</label>
+            <input type="datetime-local" id="votingStartAt" formControlName="votingStartAt" class="form-control">
+            <div *ngIf="sessionForm.get('votingStartAt')?.invalid && sessionForm.get('votingStartAt')?.touched" class="form-error">
+              <span *ngIf="sessionForm.get('votingStartAt')?.errors?.['required']">Start time is required.</span>
             </div>
           </div>
 
           <div class="form-group half-width">
-            <label for="endTime" class="form-label">End Date & Time</label>
-            <input type="datetime-local" id="endTime" formControlName="endTime" class="form-control">
-            <div *ngIf="sessionForm.get('endTime')?.invalid && sessionForm.get('endTime')?.touched" class="form-error">
-              <span *ngIf="sessionForm.get('endTime')?.errors?.['required']">End time is required.</span>
+            <label for="votingEndAt" class="form-label">End Date & Time</label>
+            <input type="datetime-local" id="votingEndAt" formControlName="votingEndAt" class="form-control">
+            <div *ngIf="sessionForm.get('votingEndAt')?.invalid && sessionForm.get('votingEndAt')?.touched" class="form-error">
+              <span *ngIf="sessionForm.get('votingEndAt')?.errors?.['required']">End time is required.</span>
             </div>
           </div>
         </div>
@@ -150,14 +147,14 @@
               <div class="checkbox-box" [class.checked]="isTeamSelected(team.id)">
                 <span *ngIf="isTeamSelected(team.id)">✓</span>
               </div>
-              <span class="team-check-text">{{ team.name }} ({{ team.code }}) — {{ team.region }}</span>
+              <span class="team-check-text">{{ team.name }} ({{ team.countryCode }}) — {{ team.region }}</span>
             </div>
           </div>
           <p class="checkbox-hint-text">Leave all unchecked to include all active teams meeting the region criteria.</p>
         </div>
 
         <div class="modal-actions mt-4">
-          <button type="submit" class="btn btn-primary">Publish Session</button>
+          <button type="submit" class="btn btn-primary">Create Session</button>
           <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
         </div>
       </form>

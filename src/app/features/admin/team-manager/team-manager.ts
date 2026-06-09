@@ -19,17 +19,26 @@ export class TeamManagerComponent implements OnInit {
   private votingService = inject(VotingService);
   private fb = inject(FormBuilder);
 
-  teams: Team[] = [];
+  allTeams: Team[] = [];
+  paginatedTeams: Team[] = [];
   isLoading = true;
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
+  // Pagination
+  pageNumber = 1;
+  pageSize = 15;
+  totalPages = 1;
+  totalRecords = 0;
+
   teamForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(100)]],
-    code: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(5)]],
-    group: ['', [Validators.required, Validators.maxLength(2)]],
+    countryCode: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(5)]],
+    groupName: ['', [Validators.required, Validators.maxLength(10)]],
     region: ['', [Validators.required, Validators.maxLength(50)]],
-    logoUrl: ['', [Validators.maxLength(500)]]
+    coachName: ['', [Validators.maxLength(100)]],
+    description: ['', [Validators.maxLength(500)]],
+    flagUrl: ['', [Validators.maxLength(500)]]
   });
 
   isEditing = false;
@@ -42,11 +51,15 @@ export class TeamManagerComponent implements OnInit {
 
   loadTeams(): void {
     this.isLoading = true;
-    this.votingService.getTeams().subscribe({
+    this.votingService.getTeams(true).subscribe({
       next: (res) => {
         this.isLoading = false;
         if (res.success) {
-          this.teams = res.data;
+          this.allTeams = res.data;
+          this.totalRecords = this.allTeams.length;
+          this.totalPages = Math.ceil(this.totalRecords / this.pageSize) || 1;
+          if (this.pageNumber > this.totalPages) this.pageNumber = 1;
+          this.updatePage();
         }
       },
       error: () => {
@@ -54,6 +67,25 @@ export class TeamManagerComponent implements OnInit {
         this.errorMessage = 'Failed to load teams.';
       }
     });
+  }
+
+  updatePage(): void {
+    const start = (this.pageNumber - 1) * this.pageSize;
+    this.paginatedTeams = this.allTeams.slice(start, start + this.pageSize);
+  }
+
+  nextPage(): void {
+    if (this.pageNumber < this.totalPages) {
+      this.pageNumber++;
+      this.updatePage();
+    }
+  }
+
+  prevPage(): void {
+    if (this.pageNumber > 1) {
+      this.pageNumber--;
+      this.updatePage();
+    }
   }
 
   openCreateModal(): void {
@@ -68,10 +100,12 @@ export class TeamManagerComponent implements OnInit {
     this.editingTeamId = team.id;
     this.teamForm.patchValue({
       name: team.name,
-      code: team.code,
-      group: team.group,
+      countryCode: team.countryCode,
+      groupName: team.groupName,
       region: team.region,
-      logoUrl: team.logoUrl
+      coachName: team.coachName || '',
+      description: team.description || '',
+      flagUrl: team.flagUrl || ''
     });
     this.showFormModal = true;
   }
@@ -91,7 +125,11 @@ export class TeamManagerComponent implements OnInit {
     this.errorMessage = null;
     this.successMessage = null;
 
-    const teamData = this.teamForm.value;
+    const currentTeam = this.allTeams.find(t => t.id === this.editingTeamId);
+    const teamData = {
+      ...this.teamForm.value,
+      isActive: this.isEditing && currentTeam ? currentTeam.isActive : true
+    };
 
     if (this.isEditing && this.editingTeamId) {
       this.adminService.updateTeam(this.editingTeamId, teamData).subscribe({
@@ -153,7 +191,18 @@ export class TeamManagerComponent implements OnInit {
     this.errorMessage = null;
     this.successMessage = null;
 
-    this.adminService.updateTeam(team.id, { ...team, isActive: !team.isActive }).subscribe({
+    const payload = {
+      name: team.name,
+      countryCode: team.countryCode,
+      groupName: team.groupName,
+      region: team.region,
+      coachName: team.coachName || '',
+      description: team.description || '',
+      flagUrl: team.flagUrl || '',
+      isActive: !team.isActive
+    };
+
+    this.adminService.updateTeam(team.id, payload).subscribe({
       next: (res) => {
         this.isLoading = false;
         if (res.success) {
@@ -166,5 +215,35 @@ export class TeamManagerComponent implements OnInit {
         this.errorMessage = err.error?.message || 'Failed to toggle status.';
       }
     });
+  }
+
+  getFlagUrl(countryCode: string, flagUrl?: string): string {
+    if (flagUrl && flagUrl.startsWith('http') && !flagUrl.includes('flags.com')) {
+      return flagUrl;
+    }
+    if (!countryCode) return '';
+    const cc = countryCode.toUpperCase().trim();
+    
+    if (cc.length === 2) {
+      return `https://flagcdn.com/w80/${cc.toLowerCase()}.png`;
+    }
+
+    const mapping: { [key: string]: string } = {
+      'QAT': 'qa', 'ECU': 'ec', 'SEN': 'sn', 'NED': 'nl',
+      'ENG': 'gb-eng', 'IRN': 'ir', 'USA': 'us', 'WAL': 'gb-wls',
+      'ARG': 'ar', 'KSA': 'sa', 'MEX': 'mx', 'POL': 'pl',
+      'FRA': 'fr', 'AUS': 'au', 'DEN': 'dk', 'TUN': 'tn',
+      'ESP': 'es', 'CRC': 'cr', 'GER': 'de', 'JPN': 'jp',
+      'BEL': 'be', 'CAN': 'ca', 'MAR': 'ma', 'CRO': 'hr',
+      'BRA': 'br', 'SRB': 'rs', 'SUI': 'ch', 'CMR': 'cm',
+      'POR': 'pt', 'GHA': 'gh', 'URU': 'uy', 'KOR': 'kr',
+      'ITA': 'it', 'SWE': 'se', 'NOR': 'no', 'FIN': 'fi',
+      'AUT': 'at', 'TUR': 'tr',
+      'UKR': 'ua', 'GRE': 'gr', 'NGA': 'ng', 'EGY': 'eg',
+      'RSA': 'za', 'CIV': 'ci', 'ALG': 'dz', 'COL': 'co',
+      'CHI': 'cl', 'PER': 'pe', 'CHN': 'cn', 'IND': 'in', 'NZL': 'nz'
+    };
+    const code = mapping[cc] || cc.toLowerCase();
+    return `https://flagcdn.com/w80/${code}.png`;
   }
 }

@@ -41,7 +41,11 @@ export class DashboardComponent implements OnInit {
 
     this.votingService.getActiveSessions().subscribe({
       next: (res) => {
-        if (res.success) this.activeSessions = res.data;
+        if (res.success && res.data) {
+          this.activeSessions = Array.isArray(res.data) ? res.data : [res.data];
+        } else {
+          this.activeSessions = [];
+        }
       }
     });
 
@@ -57,5 +61,35 @@ export class DashboardComponent implements OnInit {
         this.errorMessage = 'Failed to load dashboard data. Check backend connectivity.';
       }
     });
+  }
+
+  getFlagUrl(countryCode: string, flagUrl?: string): string {
+    if (flagUrl && flagUrl.startsWith('http') && !flagUrl.includes('flags.com')) {
+      return flagUrl;
+    }
+    if (!countryCode) return '';
+    const cc = countryCode.toUpperCase().trim();
+    
+    if (cc.length === 2) {
+      return `https://flagcdn.com/w80/${cc.toLowerCase()}.png`;
+    }
+
+    const mapping: { [key: string]: string } = {
+      'QAT': 'qa', 'ECU': 'ec', 'SEN': 'sn', 'NED': 'nl',
+      'ENG': 'gb-eng', 'IRN': 'ir', 'USA': 'us', 'WAL': 'gb-wls',
+      'ARG': 'ar', 'KSA': 'sa', 'MEX': 'mx', 'POL': 'pl',
+      'FRA': 'fr', 'AUS': 'au', 'DEN': 'dk', 'TUN': 'tn',
+      'ESP': 'es', 'CRC': 'cr', 'GER': 'de', 'JPN': 'jp',
+      'BEL': 'be', 'CAN': 'ca', 'MAR': 'ma', 'CRO': 'hr',
+      'BRA': 'br', 'SRB': 'rs', 'SUI': 'ch', 'CMR': 'cm',
+      'POR': 'pt', 'GHA': 'gh', 'URU': 'uy', 'KOR': 'kr',
+      'ITA': 'it', 'SWE': 'se', 'NOR': 'no', 'FIN': 'fi',
+      'AUT': 'at', 'TUR': 'tr',
+      'UKR': 'ua', 'GRE': 'gr', 'NGA': 'ng', 'EGY': 'eg',
+      'RSA': 'za', 'CIV': 'ci', 'ALG': 'dz', 'COL': 'co',
+      'CHI': 'cl', 'PER': 'pe', 'CHN': 'cn', 'IND': 'in', 'NZL': 'nz'
+    };
+    const code = mapping[cc] || cc.toLowerCase();
+    return `https://flagcdn.com/w80/${code}.png`;
   }
 }

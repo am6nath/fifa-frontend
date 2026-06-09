@@ -23,7 +23,7 @@ export class UserManagerComponent implements OnInit {
 
   // Pagination parameters
   pageNumber = 1;
-  pageSize = 10;
+  pageSize = 15;
   totalPages = 1;
   totalRecords = 0;
   

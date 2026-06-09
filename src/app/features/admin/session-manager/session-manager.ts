@@ -28,9 +28,9 @@ export class SessionManagerComponent implements OnInit {
 
   sessionForm: FormGroup = this.fb.group({
     title: ['', [Validators.required, Validators.maxLength(150)]],
-    description: ['', [Validators.required, Validators.maxLength(500)]],
-    startTime: ['', [Validators.required]],
-    endTime: ['', [Validators.required]],
+    notes: ['', [Validators.maxLength(500)]],
+    votingStartAt: ['', [Validators.required]],
+    votingEndAt: ['', [Validators.required]],
     regionFilter: [''],
     winnersCount: [1, [Validators.required, Validators.min(1), Validators.max(32)]],
     selectedTeamIds: [[]]
@@ -100,8 +100,8 @@ export class SessionManagerComponent implements OnInit {
       return;
     }
 
-    const startVal = new Date(this.sessionForm.value.startTime);
-    const endVal = new Date(this.sessionForm.value.endTime);
+    const startVal = new Date(this.sessionForm.value.votingStartAt);
+    const endVal = new Date(this.sessionForm.value.votingEndAt);
     if (startVal >= endVal) {
       this.errorMessage = 'Start Time must be chronologically before the End Time.';
       return;
@@ -114,9 +114,9 @@ export class SessionManagerComponent implements OnInit {
     const formVal = this.sessionForm.value;
     const sessionPayload = {
       title: formVal.title,
-      description: formVal.description,
-      startTime: new Date(formVal.startTime).toISOString(),
-      endTime: new Date(formVal.endTime).toISOString(),
+      notes: formVal.notes || null,
+      votingStartAt: new Date(formVal.votingStartAt).toISOString(),
+      votingEndAt: new Date(formVal.votingEndAt).toISOString(),
       regionFilter: formVal.regionFilter || null,
       winnersCount: formVal.winnersCount || 1,
       teamIds: this.selectedTeamsList.length > 0 ? this.selectedTeamsList : null

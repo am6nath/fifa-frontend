@@ -36,8 +36,7 @@ export const routes: Routes = [
   // Voting path
   {
     path: 'vote/:id',
-    loadComponent: () => import('./features/voting/cast-vote/cast-vote').then(m => m.CastVoteComponent),
-    canActivate: [authGuard]
+    loadComponent: () => import('./features/voting/cast-vote/cast-vote').then(m => m.CastVoteComponent)
   },
   // Admin paths
   {

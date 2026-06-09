@@ -20,8 +20,16 @@
   border-radius: 0px;
   font-size: 0.95rem;
   text-align: left;
-  display: inline-block;
-  min-width: 280px;
+  display: block;
+  margin: 16px 0;
+  width: 100%;
+}
+
+.voted-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
 }
 
 .receipt-date {

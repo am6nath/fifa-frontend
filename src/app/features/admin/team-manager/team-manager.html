@@ -5,27 +5,27 @@
       <p>Configure FIFA World Cup candidate nations and continental groups</p>
     </div>
     <div class="header-actions">
-      <button class="btn btn-primary btn-sm" (click)="openCreateModal()">＋ Add New Team</button>
+      <button class="btn btn-primary btn-sm" (click)="openCreateModal()">+ Add New Team</button>
       <a routerLink="/admin" class="btn btn-secondary btn-sm">Admin Dashboard</a>
     </div>
   </div>
 
   <div *ngIf="successMessage" class="alert alert-success mb-4">
-    <span>Success: {{ successMessage }}</span>
+    <span>{{ successMessage }}</span>
   </div>
 
   <div *ngIf="errorMessage" class="alert alert-danger mb-4">
-    <span>Error: {{ errorMessage }}</span>
+    <span>{{ errorMessage }}</span>
   </div>
 
   <app-loader *ngIf="isLoading" message="Fetching team configurations..."></app-loader>
 
   <!-- Team Grid Table -->
-  <div class="table-container glass-card" *ngIf="!isLoading && teams.length > 0">
+  <div class="table-container glass-card" *ngIf="!isLoading && paginatedTeams.length > 0">
     <table class="fifa-table">
       <thead>
         <tr>
-          <th>Logo</th>
+          <th>Flag</th>
           <th>Code</th>
           <th>Name</th>
           <th>Group</th>
@@ -35,14 +35,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let team of teams">
+        <tr *ngFor="let team of paginatedTeams">
           <td>
-            <span class="team-flag" *ngIf="!team.logoUrl">{{ team.code }}</span>
-            <img class="team-logo" *ngIf="team.logoUrl" [src]="team.logoUrl" alt="{{ team.name }} flag">
+            <img class="team-logo" [src]="getFlagUrl(team.countryCode, team.flagUrl)" alt="{{ team.name }} flag">
           </td>
-          <td><strong class="text-mono">{{ team.code }}</strong></td>
+          <td><strong class="text-mono">{{ team.countryCode }}</strong></td>
           <td><strong>{{ team.name }}</strong></td>
-          <td>Group {{ team.group }}</td>
+          <td>{{ team.groupName }}</td>
           <td><span class="badge badge-info">{{ team.region }}</span></td>
           <td>
             <span class="badge" [class.badge-success]="team.isActive" [class.badge-danger]="!team.isActive">
@@ -59,6 +58,17 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-panel py-3 px-4">
+      <div class="pagination-info">
+        Showing Page <strong>{{ pageNumber }}</strong> of <strong>{{ totalPages }}</strong> ({{ totalRecords }} total teams)
+      </div>
+      <div class="pagination-buttons">
+        <button class="btn btn-secondary btn-sm" [disabled]="pageNumber === 1" (click)="prevPage()">Previous</button>
+        <button class="btn btn-secondary btn-sm" [disabled]="pageNumber === totalPages" (click)="nextPage()">Next</button>
+      </div>
+    </div>
   </div>
 
   <!-- Form Modal popup -->
@@ -80,18 +90,18 @@
 
         <div class="form-row">
           <div class="form-group half-width">
-            <label for="code" class="form-label">Country Code</label>
-            <input type="text" id="code" formControlName="code" class="form-control" placeholder="e.g. ARG">
-            <div *ngIf="teamForm.get('code')?.invalid && teamForm.get('code')?.touched" class="form-error">
-              <span *ngIf="teamForm.get('code')?.errors?.['required']">Code is required.</span>
+            <label for="countryCode" class="form-label">Country Code</label>
+            <input type="text" id="countryCode" formControlName="countryCode" class="form-control" placeholder="e.g. ARG">
+            <div *ngIf="teamForm.get('countryCode')?.invalid && teamForm.get('countryCode')?.touched" class="form-error">
+              <span *ngIf="teamForm.get('countryCode')?.errors?.['required']">Code is required.</span>
             </div>
           </div>
 
           <div class="form-group half-width">
-            <label for="group" class="form-label">World Cup Group</label>
-            <input type="text" id="group" formControlName="group" class="form-control" placeholder="e.g. C">
-            <div *ngIf="teamForm.get('group')?.invalid && teamForm.get('group')?.touched" class="form-error">
-              <span *ngIf="teamForm.get('group')?.errors?.['required']">Group is required.</span>
+            <label for="groupName" class="form-label">World Cup Group</label>
+            <input type="text" id="groupName" formControlName="groupName" class="form-control" placeholder="e.g. Group C">
+            <div *ngIf="teamForm.get('groupName')?.invalid && teamForm.get('groupName')?.touched" class="form-error">
+              <span *ngIf="teamForm.get('groupName')?.errors?.['required']">Group is required.</span>
             </div>
           </div>
         </div>
@@ -104,9 +114,20 @@
           </div>
         </div>
 
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="coachName" class="form-label">Coach Name</label>
+            <input type="text" id="coachName" formControlName="coachName" class="form-control" placeholder="e.g. Lionel Scaloni">
+          </div>
+          <div class="form-group half-width">
+            <label for="flagUrl" class="form-label">Flag URL (Optional)</label>
+            <input type="text" id="flagUrl" formControlName="flagUrl" class="form-control" placeholder="e.g. https://flagcdn.com/w80/ar.png">
+          </div>
+        </div>
+
         <div class="form-group">
-          <label for="logoUrl" class="form-label">Flag / Emblem Logo URL (Optional)</label>
-          <input type="text" id="logoUrl" formControlName="logoUrl" class="form-control" placeholder="e.g. https://domain.com/flag.png">
+          <label for="description" class="form-label">Description / Nickname</label>
+          <input type="text" id="description" formControlName="description" class="form-control" placeholder="e.g. La Albiceleste">
         </div>
 
         <div class="modal-actions mt-4">

@@ -1,11 +1,14 @@
 export interface Team {
   id: number;
   name: string;
-  code: string;
-  group: string;
-  logoUrl: string;
+  countryCode: string;
+  flagUrl: string;
+  groupName: string;
+  coachName: string;
+  description: string;
   region: string;
   isActive: boolean;
-  voteCount?: number;
+  totalVotes: number;
   createdAt?: string;
+  updatedAt?: string;
 }

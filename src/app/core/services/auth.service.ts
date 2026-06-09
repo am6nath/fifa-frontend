@@ -53,7 +53,7 @@ export class AuthService {
 
   // POST: Verify OTP code
   verifyOtp(email: string, otpCode: string): Observable<ApiResponse<AuthResponse>> {
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.baseUrl}/verify-otp`, { email, otpCode }).pipe(
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.baseUrl}/verify-otp`, { email, otp: otpCode }).pipe(
       tap(response => {
         if (response.success && response.data) {
           this.setSession(response.data);

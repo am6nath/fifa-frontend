@@ -1,11 +1,38 @@
 <div class="teams-page-wrapper container section-spacing animate-fade-in">
-  <div class="glass-card page-header mb-5">
+  <div class="glass-card page-header mb-4">
     <div class="header-details">
       <h2>FIFA World Cup Teams</h2>
-      <p>Official list of 32 pre-seeded candidate nations representing their groups and continental regions</p>
+      <p>Official pre-seeded candidate nations representing regional groups</p>
     </div>
     <div class="header-actions">
-      <a routerLink="/" class="btn btn-secondary btn-sm">◀ Back to Dashboard</a>
+      <a routerLink="/" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="search-panel glass-card mb-4">
+    <div class="filter-form" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+      <div class="filter-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+        <label class="form-label" for="search">Search Candidates</label>
+        <input 
+          type="text" 
+          id="search" 
+          [(ngModel)]="searchTerm" 
+          (ngModelChange)="onSearchChange()" 
+          class="form-control" 
+          placeholder="Type country name or code...">
+      </div>
+      <div class="filter-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+        <label class="form-label" for="region">Filter by Region</label>
+        <select 
+          id="region" 
+          [(ngModel)]="selectedRegion" 
+          (ngModelChange)="onRegionChange($event)" 
+          class="form-control form-select">
+          <option value="">All Regions</option>
+          <option *ngFor="let reg of regions" [value]="reg">{{ reg }}</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -15,22 +42,35 @@
     <span>Error: {{ errorMessage }}</span>
   </div>
 
-  <!-- Group Showcase Grid -->
-  <div class="groups-grid" *ngIf="!isLoading && !errorMessage">
-    <div class="group-card glass-card" *ngFor="let key of groupKeys">
-      <div class="group-header">
-        <h3>Group {{ key }}</h3>
+  <!-- Teams Showcase Grid -->
+  <div *ngIf="!isLoading && !errorMessage">
+    <div class="groups-grid" *ngIf="paginatedTeams.length > 0; else noTeams">
+      <div class="group-card glass-card" *ngFor="let team of paginatedTeams" style="display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 16px;">
+        <img class="team-logo" [src]="getFlagUrl(team.countryCode, team.flagUrl)" alt="{{ team.name }} flag" style="width: 48px; height: 32px; object-fit: cover; border: 1px solid var(--border-color); border-radius: 0px;">
+        <div class="team-details" style="display: flex; flex-direction: column; flex-grow: 1;">
+          <strong class="team-name" style="font-size: 1.05rem; font-weight: 700; color: var(--text-main);">{{ team.name }} ({{ team.countryCode }})</strong>
+          <span class="team-region" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Region: {{ team.region }}</span>
+          <span class="badge badge-info mt-1" style="font-size: 0.7rem; align-self: flex-start;" *ngIf="team.groupName">{{ team.groupName }}</span>
+        </div>
       </div>
-      <ul class="group-teams-list">
-        <li class="group-team-item" *ngFor="let team of groups[key]">
-          <span class="team-flag" *ngIf="!team.logoUrl">{{ team.code }}</span>
-          <img class="team-logo" *ngIf="team.logoUrl" [src]="team.logoUrl" alt="{{ team.name }} flag">
-          <div class="team-details">
-            <span class="team-name">{{ team.name }}</span>
-            <span class="team-region">{{ team.region }}</span>
-          </div>
-        </li>
-      </ul>
+    </div>
+
+    <ng-template #noTeams>
+      <div class="glass-card empty-state text-center py-5">
+        <h3>No Teams Found</h3>
+        <p>No seeded teams match your search or filter criteria.</p>
+      </div>
+    </ng-template>
+
+    <!-- Pagination controls -->
+    <div class="pagination-panel glass-card py-3 px-4 mt-4" *ngIf="filteredTeams.length > 0" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color);">
+      <div class="pagination-info" style="font-size: 0.85rem; color: var(--text-muted);">
+        Showing Page <strong>{{ pageNumber }}</strong> of <strong>{{ totalPages }}</strong> ({{ totalRecords }} total teams)
+      </div>
+      <div class="pagination-buttons" style="display: flex; gap: 8px;">
+        <button class="btn btn-secondary btn-sm" [disabled]="pageNumber === 1" (click)="prevPage()">Previous</button>
+        <button class="btn btn-secondary btn-sm" [disabled]="pageNumber === totalPages" (click)="nextPage()">Next</button>
+      </div>
     </div>
   </div>
 </div>

@@ -1,14 +1,19 @@
 export interface VotingSession {
   id: number;
   title: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-  isPublished: boolean;
-  isClosed: boolean;
-  status: 'Upcoming' | 'Active' | 'Closed';
-  teamIds?: number[];
+  votingStartAt: string;
+  votingEndAt: string;
+  isVotingClosedManually: boolean;
+  resultsPublished: boolean;
+  resultsPublishedAt?: string;
+  publishedBy?: string;
+  notes?: string;
+  teamIds: number[];
   regionFilter?: string;
-  winnersCount?: number;
+  totalVotes: number;
+  winnersCount: number;
+  isActive: boolean;
+  status: 'Upcoming' | 'Active' | 'Closed';
   createdAt?: string;
+  updatedAt?: string;
 }

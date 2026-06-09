@@ -56,11 +56,11 @@ export class AdminService {
   // --- Users Management (Paginated) ---
   getUsers(pageNumber: number, pageSize: number, searchTerm?: string): Observable<ApiResponse<PagedResponse<UserProfile>>> {
     let params = new HttpParams()
-      .set('pageNumber', pageNumber.toString())
-      .set('pageSize', pageSize.toString());
+      .set('PageNumber', pageNumber.toString())
+      .set('PageSize', pageSize.toString());
 
     if (searchTerm) {
-      params = params.set('searchTerm', searchTerm);
+      params = params.set('Search', searchTerm);
     }
 
     return this.http.get<ApiResponse<PagedResponse<UserProfile>>>(`${this.baseUrl}/Users`, { params });
@@ -79,12 +79,12 @@ export class AdminService {
     username?: string
   ): Observable<ApiResponse<PagedResponse<AuditLog>>> {
     let params = new HttpParams()
-      .set('pageNumber', pageNumber.toString())
-      .set('pageSize', pageSize.toString());
+      .set('PageNumber', pageNumber.toString())
+      .set('PageSize', pageSize.toString());
 
-    if (action) params = params.set('action', action);
-    if (entityName) params = params.set('entityName', entityName);
-    if (username) params = params.set('username', username);
+    if (action) params = params.set('Action', action);
+    if (entityName) params = params.set('EntityName', entityName);
+    if (username) params = params.set('Username', username);
 
     return this.http.get<ApiResponse<PagedResponse<AuditLog>>>(`${this.baseUrl}/audit-logs`, { params });
   }

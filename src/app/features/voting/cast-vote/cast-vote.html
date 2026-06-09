@@ -17,7 +17,8 @@
         <p class="receipt-date">Date: {{ myVoteDetails.votedAt | date:'medium' }}</p>
       </div>
       <div class="voted-actions mt-4">
-        <a *ngIf="authService.isAdmin() || session?.resultsPublished" [routerLink]="['/results', sessionId]" [queryParams]="{live: 'true'}" class="btn btn-primary">View Live Standings</a>
+        <a *ngIf="session?.resultsPublished" [routerLink]="['/results', sessionId]" class="btn btn-primary">View Official Results</a>
+        <a *ngIf="authService.isAdmin() && !session?.resultsPublished" [routerLink]="['/results', sessionId]" [queryParams]="{live: 'true'}" class="btn btn-primary">View Live Standings</a>
         <a routerLink="/" class="btn btn-secondary">Back to Dashboard</a>
       </div>
     </div>

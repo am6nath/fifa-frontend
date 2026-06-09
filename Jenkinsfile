@@ -46,8 +46,15 @@ pipeline {
 
         stage('Docker Package') {
             steps {
+                echo 'Pulling base images...'
+                retry(2) {
+                    bat 'docker pull node:20-alpine || exit /b 0'
+                    bat 'docker pull nginx:stable-alpine || exit /b 0'
+                }
                 echo 'Building Docker image...'
-                bat 'docker build -t fifa-frontend:latest .'
+                retry(3) {
+                    bat 'docker build -t fifa-frontend:latest .'
+                }
             }
         }
     }

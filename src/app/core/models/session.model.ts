@@ -9,5 +9,6 @@ export interface VotingSession {
   status: 'Upcoming' | 'Active' | 'Closed';
   teamIds?: number[];
   regionFilter?: string;
+  winnersCount?: number;
   createdAt?: string;
 }

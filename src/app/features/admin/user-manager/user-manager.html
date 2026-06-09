@@ -13,7 +13,6 @@
   <div class="search-panel glass-card mb-4">
     <form (submit)="onSearch()" class="search-form">
       <div class="search-input-group">
-        <span class="search-icon-decor">🔍</span>
         <input 
           type="text" 
           [(ngModel)]="searchTerm" 
@@ -27,11 +26,11 @@
   </div>
 
   <div *ngIf="successMessage" class="alert alert-success mb-4">
-    <span>✅ {{ successMessage }}</span>
+    <span>Success: {{ successMessage }}</span>
   </div>
 
   <div *ngIf="errorMessage" class="alert alert-danger mb-4">
-    <span>⚠️ {{ errorMessage }}</span>
+    <span>Error: {{ errorMessage }}</span>
   </div>
 
   <app-loader *ngIf="isLoading" message="Fetching voter roster..."></app-loader>
@@ -95,7 +94,6 @@
   </div>
 
   <div class="glass-card empty-state text-center py-5" *ngIf="!isLoading && users.length === 0">
-    <span class="empty-icon">👥</span>
     <h3>No Voters Found</h3>
     <p>No user accounts matched the specified search criteria.</p>
   </div>

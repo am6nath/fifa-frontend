@@ -10,41 +10,36 @@
         <a routerLink="/teams" class="btn btn-secondary">Explore FIFA Teams</a>
       </div>
     </div>
-    <div class="hero-visual">⚽</div>
   </header>
 
   <app-loader *ngIf="isLoading" message="Fetching live FIFA dashboard data..."></app-loader>
 
   <div *ngIf="errorMessage" class="alert alert-danger mb-4">
-    <span>⚠️ {{ errorMessage }}</span>
+    <span>Error: {{ errorMessage }}</span>
   </div>
 
   <ng-container *ngIf="!isLoading && !errorMessage">
     <!-- Stat Cards Grid -->
     <section class="stats-grid mb-5" *ngIf="stats">
       <div class="stat-card glass-card">
-        <span class="stat-icon">👥</span>
         <div class="stat-details">
           <h3>{{ stats.totalUsers | number }}</h3>
           <p>Registered Panelists</p>
         </div>
       </div>
       <div class="stat-card glass-card">
-        <span class="stat-icon">🗳️</span>
         <div class="stat-details">
           <h3>{{ stats.totalVotes | number }}</h3>
           <p>Total Votes Cast</p>
         </div>
       </div>
       <div class="stat-card glass-card">
-        <span class="stat-icon">🔥</span>
         <div class="stat-details">
           <h3>{{ stats.activeSessions }}</h3>
           <p>Active Voting Polls</p>
         </div>
       </div>
       <div class="stat-card glass-card">
-        <span class="stat-icon">🏳️</span>
         <div class="stat-details">
           <h3>{{ stats.totalTeams }}</h3>
           <p>FIFA Teams Seeded</p>
@@ -78,7 +73,6 @@
       </div>
       <ng-template #noSessions>
         <div class="glass-card empty-state text-center py-5">
-          <span class="empty-icon">📅</span>
           <h3>No Active Sessions</h3>
           <p>There are no live voting polls running at the moment. Please check back later!</p>
         </div>

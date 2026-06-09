@@ -135,6 +135,15 @@
         </div>
 
         <div class="form-group">
+          <label for="winnersCount" class="form-label">Max Winners to Select</label>
+          <input type="number" id="winnersCount" formControlName="winnersCount" class="form-control" min="1" max="32" placeholder="e.g. 1">
+          <div *ngIf="sessionForm.get('winnersCount')?.invalid && sessionForm.get('winnersCount')?.touched" class="form-error">
+            <span *ngIf="sessionForm.get('winnersCount')?.errors?.['required']">Winners count is required.</span>
+            <span *ngIf="sessionForm.get('winnersCount')?.errors?.['min'] || sessionForm.get('winnersCount')?.errors?.['max']">Winners count must be between 1 and 32.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
           <label class="form-label">Restrict Candidates List (Optional Subset)</label>
           <div class="team-checkbox-list glass-card">
             <div class="team-check-item" *ngFor="let team of teams" (click)="toggleTeamSelection(team.id)">

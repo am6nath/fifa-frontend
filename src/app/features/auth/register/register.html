@@ -1,13 +1,12 @@
 <div class="auth-wrapper section-spacing animate-fade-in">
   <div class="glass-card auth-card">
     <div class="auth-header">
-      <span class="auth-icon">📝</span>
       <h2>Create Account</h2>
       <p class="auth-subtitle">Register to vote in official FIFA fan polls</p>
     </div>
 
     <div *ngIf="errorMessage" class="alert alert-danger">
-      <span>⚠️ {{ errorMessage }}</span>
+      <span>Error: {{ errorMessage }}</span>
     </div>
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">

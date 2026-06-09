@@ -1,17 +1,16 @@
 <div class="auth-wrapper section-spacing animate-fade-in">
   <div class="glass-card auth-card">
     <div class="auth-header">
-      <span class="auth-icon">📩</span>
       <h2>Verify OTP</h2>
       <p class="auth-subtitle">We have sent a 6-digit verification code to <br><strong class="highlight-email">{{ email }}</strong></p>
     </div>
 
     <div *ngIf="errorMessage" class="alert alert-danger">
-      <span>⚠️ {{ errorMessage }}</span>
+      <span>Error: {{ errorMessage }}</span>
     </div>
 
     <div *ngIf="successMessage" class="alert alert-success">
-      <span>✅ {{ successMessage }}</span>
+      <span>Success: {{ successMessage }}</span>
     </div>
 
     <form [formGroup]="otpForm" (ngSubmit)="onSubmit()">

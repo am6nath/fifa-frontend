@@ -32,6 +32,7 @@ export class SessionManagerComponent implements OnInit {
     startTime: ['', [Validators.required]],
     endTime: ['', [Validators.required]],
     regionFilter: [''],
+    winnersCount: [1, [Validators.required, Validators.min(1), Validators.max(32)]],
     selectedTeamIds: [[]]
   });
 
@@ -117,6 +118,7 @@ export class SessionManagerComponent implements OnInit {
       startTime: new Date(formVal.startTime).toISOString(),
       endTime: new Date(formVal.endTime).toISOString(),
       regionFilter: formVal.regionFilter || null,
+      winnersCount: formVal.winnersCount || 1,
       teamIds: this.selectedTeamsList.length > 0 ? this.selectedTeamsList : null
     };
 

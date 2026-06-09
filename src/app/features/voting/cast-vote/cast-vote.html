@@ -4,7 +4,6 @@
   <div *ngIf="!isLoading">
     <!-- Already Voted Screen -->
     <div class="glass-card voted-screen text-center py-5" *ngIf="hasVoted">
-      <span class="voted-icon">🎉</span>
       <h2>Ballot Submitted</h2>
       <div class="alert alert-success my-4" *ngIf="successMessage">
         <span>{{ successMessage }}</span>
@@ -26,7 +25,6 @@
     <!-- Active Voting Screen -->
     <div class="voting-screen" *ngIf="!hasVoted && session">
       <header class="voting-header mb-5">
-        <span class="voting-icon-header">🗳️</span>
         <h2>{{ session.title }}</h2>
         <p class="session-desc-text">{{ session.description }}</p>
         <div class="session-restrictions mt-3">
@@ -36,7 +34,7 @@
       </header>
 
       <div *ngIf="errorMessage" class="alert alert-danger mb-4">
-        <span>⚠️ {{ errorMessage }}</span>
+        <span>Error: {{ errorMessage }}</span>
       </div>
 
       <!-- Candidate Grid -->
@@ -62,7 +60,6 @@
 
         <ng-template #noCandidates>
           <div class="glass-card empty-state text-center py-5">
-            <span class="empty-icon">🏳️</span>
             <h3>No Eligible Candidates</h3>
             <p>No teams match this session's configuration criteria (subset/region filter).</p>
           </div>
@@ -72,7 +69,7 @@
         <div class="voting-actions-panel mt-5 glass-card" *ngIf="eligibleCandidates.length > 0">
           <p class="voting-warning-text" *ngIf="!selectedTeamId">Please select a candidate from the list above to lock your vote.</p>
           <p class="voting-warning-text warning-active" *ngIf="selectedTeamId">
-            ⚠️ <strong>Warning</strong>: Submitting will lock your selection permanently. You cannot edit or cast another vote.
+            <strong>Warning</strong>: Submitting will lock your selection permanently. You cannot edit or cast another vote.
           </p>
           <div class="buttons-row mt-4">
             <button class="btn btn-primary" [disabled]="!selectedTeamId || isCasting" (click)="submitVote()">

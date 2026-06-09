@@ -2,12 +2,11 @@
   <app-loader *ngIf="isLoading" message="Retrieving voter profile..."></app-loader>
 
   <div *ngIf="errorMessage" class="alert alert-danger mb-4">
-    <span>⚠️ {{ errorMessage }}</span>
+    <span>Error: {{ errorMessage }}</span>
   </div>
 
   <div class="glass-card profile-card" *ngIf="!isLoading && profile">
     <header class="profile-header text-center mb-4">
-      <span class="profile-avatar">👤</span>
       <h2>{{ profile.userName }}</h2>
       <p class="profile-role"><span class="badge badge-info">{{ profile.role }}</span></p>
     </header>

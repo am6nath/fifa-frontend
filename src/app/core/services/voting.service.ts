@@ -24,6 +24,11 @@ export class VotingService {
     return this.http.get<ApiResponse<VotingResult[]>>(`${this.baseUrl}/Statistics/results/${sessionId}`);
   }
 
+  // GET: Fetch a single session by ID
+  getSessionById(sessionId: number): Observable<ApiResponse<VotingSession>> {
+    return this.http.get<ApiResponse<VotingSession>>(`${this.baseUrl}/voting-sessions/${sessionId}`);
+  }
+
   // GET: Fetch live results for a session (available to voter or admin)
   getLiveResults(sessionId: number): Observable<ApiResponse<VotingResult[]>> {
     return this.http.get<ApiResponse<VotingResult[]>>(`${this.baseUrl}/Statistics/live/${sessionId}`);

@@ -19,34 +19,6 @@
   </div>
 
   <ng-container *ngIf="!isLoading && !errorMessage">
-    <!-- Stat Cards Grid -->
-    <section class="stats-grid mb-5" *ngIf="stats">
-      <div class="stat-card glass-card">
-        <div class="stat-details">
-          <h3>{{ stats.totalUsers | number }}</h3>
-          <p>Registered Panelists</p>
-        </div>
-      </div>
-      <div class="stat-card glass-card">
-        <div class="stat-details">
-          <h3>{{ stats.totalVotes | number }}</h3>
-          <p>Total Votes Cast</p>
-        </div>
-      </div>
-      <div class="stat-card glass-card">
-        <div class="stat-details">
-          <h3>{{ stats.activeSessions }}</h3>
-          <p>Active Voting Polls</p>
-        </div>
-      </div>
-      <div class="stat-card glass-card">
-        <div class="stat-details">
-          <h3>{{ stats.totalTeams }}</h3>
-          <p>FIFA Teams Seeded</p>
-        </div>
-      </div>
-    </section>
-
     <!-- Active Sessions Section -->
     <section class="sessions-section mb-5">
       <div class="section-header mb-4">

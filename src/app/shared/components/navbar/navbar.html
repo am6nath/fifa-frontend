@@ -9,6 +9,9 @@
       
       <!-- Public or Authenticated Users can view Teams -->
       <a routerLink="/teams" routerLinkActive="active" class="nav-item">Teams</a>
+
+      <!-- Authenticated User Votings Link -->
+      <a *ngIf="authService.currentUser()" routerLink="/profile" routerLinkActive="active" class="nav-item">My Votes & Results</a>
       
       <!-- Admin specific link -->
       <a *ngIf="authService.isAdmin()" routerLink="/admin" routerLinkActive="active" class="nav-item admin-badge-link">

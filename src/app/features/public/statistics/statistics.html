@@ -31,9 +31,60 @@
     <div *ngIf="!isLoading && !errorMessage">
       <div class="results-list" *ngIf="results.length > 0; else noVotes">
         
-        <!-- Graphical Results Chart -->
-        <div class="chart-container glass-card my-4" style="position: relative; height: 260px; width: 100%; border-radius: 0px; padding: 16px; margin-bottom: 32px;">
-          <canvas id="resultsChart"></canvas>
+        <!-- Graphical Results Chart and Insights Summary -->
+        <div class="chart-dashboard my-4">
+          <!-- Graphical Results Chart -->
+          <div class="chart-container glass-card" style="position: relative; height: 280px; padding: 16px; border-radius: 6px;">
+            <canvas id="resultsChart"></canvas>
+          </div>
+          
+          <!-- Summary/Insights Box -->
+          <div class="insights-container glass-card" style="padding: 24px; display: flex; flex-direction: column; justify-content: center; background: rgba(255, 255, 255, 0.02); border-radius: 6px; border: 1px solid var(--border-color);">
+            <div class="insight-badge" style="margin-bottom: 16px;">
+              <span class="badge badge-success" *ngIf="session?.resultsPublished" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 4px;">Official Results</span>
+              <span class="badge badge-info animate-pulse" *ngIf="!session?.resultsPublished" style="padding: 6px 12px; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 6px; border-radius: 4px;">
+                <span class="live-dot" style="margin: 0; background-color: var(--info);"></span> Live Standings
+              </span>
+            </div>
+            
+            <div *ngIf="results.length > 0; else noInsights">
+              <h4 style="margin: 0 0 16px 0; font-size: 1.15rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: #ffffff;">Poll Insights</h4>
+              
+              <!-- Leading/Winner Information -->
+              <div class="insight-item" style="margin-bottom: 20px;">
+                <div class="insight-label" style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">
+                  {{ session?.resultsPublished ? '🏆 Official Winner' : '📈 Current Leader' }}
+                </div>
+                <div class="insight-value" style="display: flex; align-items: center; gap: 10px; font-size: 1.35rem; font-weight: 800; color: var(--accent);">
+                  <img [src]="getFlagUrl(results[0].countryCode, results[0].flagUrl)" style="width: 28px; height: 18px; object-fit: cover; border-radius: 2px; border: 1px solid rgba(255, 255, 255, 0.1);" alt="">
+                  <span>{{ results[0].teamName }}</span>
+                </div>
+                <div class="insight-meta" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 6px;">
+                  {{ session?.resultsPublished ? 'Won the poll' : 'Leading the race' }} with <strong>{{ results[0].voteCount | number }}</strong> votes (<strong>{{ results[0].percentage | number:'1.1-1' }}%</strong>)
+                </div>
+              </div>
+
+              <!-- Second Place (if any) -->
+              <div class="insight-item" *ngIf="results.length > 1" style="border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 12px;">
+                <div class="insight-label" style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">
+                  Runner-Up
+                </div>
+                <div class="insight-value" style="display: flex; align-items: center; gap: 8px; font-size: 1.1rem; font-weight: 700; color: #ffffff;">
+                  <img [src]="getFlagUrl(results[1].countryCode, results[1].flagUrl)" style="width: 22px; height: 14px; object-fit: cover; border-radius: 1px;" alt="">
+                  <span>{{ results[1].teamName }}</span>
+                </div>
+                <div class="insight-meta" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">
+                  Trailing by <strong>{{ (results[0].voteCount - results[1].voteCount) | number }}</strong> votes (<strong>{{ results[1].percentage | number:'1.1-1' }}%</strong>)
+                </div>
+              </div>
+            </div>
+            
+            <ng-template #noInsights>
+              <div style="text-align: center; color: var(--text-muted); font-size: 0.95rem; padding: 20px 0;">
+                No insights available yet.
+              </div>
+            </ng-template>
+          </div>
         </div>
 
         <div class="result-row" *ngFor="let result of paginatedResults; let i = index">
@@ -43,7 +94,7 @@
             </span>
             <span class="team-name" style="display: inline-flex; align-items: center; gap: 8px;">
               <img [src]="getFlagUrl(result.countryCode, result.flagUrl)" class="team-flag-inline" alt="">
-              <span>{{ result.teamName }} ({{ result.teamCode }})</span>
+              <span>{{ result.teamName }} ({{ result.countryCode }})</span>
               <span class="badge badge-success" *ngIf="session && result.rank <= (session.winnersCount || 1)" style="margin-left: 8px;">Winner</span>
             </span>
             <span class="vote-meta">{{ result.voteCount | number }} votes ({{ result.percentage | number:'1.1-1' }}%)</span>

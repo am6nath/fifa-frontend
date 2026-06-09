@@ -190,7 +190,7 @@ export class StatisticsComponent implements OnInit, OnDestroy {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const labels = this.results.map(r => `${r.teamName} (${r.teamCode})`);
+    const labels = this.results.map(r => `${r.teamName} (${r.countryCode})`);
     const data = this.results.map(r => r.voteCount);
     
     // Highlight top winners based on session winnersCount (default to 1)

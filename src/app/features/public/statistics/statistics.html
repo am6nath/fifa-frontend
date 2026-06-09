@@ -10,6 +10,17 @@
       </p>
     </header>
 
+    <!-- Teams in this Poll -->
+    <div class="poll-teams-list mt-3 p-3 glass-card" *ngIf="pollTeams.length > 0" style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 0px; margin-bottom: 24px;">
+      <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 8px;">Poll Candidates ({{ pollTeams.length }})</span>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <span *ngFor="let team of pollTeams" class="badge badge-info" style="font-size: 0.75rem; padding: 6px 12px; display: inline-flex; align-items: center; gap: 6px; border-radius: 0px;">
+          <img [src]="getFlagUrl(team.countryCode, team.flagUrl)" style="width: 16px; height: 11px; object-fit: cover;" alt="">
+          {{ team.name }}
+        </span>
+      </div>
+    </div>
+
     <app-loader *ngIf="isLoading" message="Fetching election statistics..."></app-loader>
 
     <div *ngIf="errorMessage" class="alert alert-danger my-4">
@@ -25,13 +36,14 @@
           <canvas id="resultsChart"></canvas>
         </div>
 
-        <div class="result-row" *ngFor="let result of results; let i = index">
+        <div class="result-row" *ngFor="let result of paginatedResults; let i = index">
           <div class="result-info">
             <span class="rank-number" [class.gold]="result.rank === 1" [class.silver]="result.rank === 2" [class.bronze]="result.rank === 3">
               #{{ result.rank }}
             </span>
-            <span class="team-name">
-              {{ result.teamName }} ({{ result.teamCode }})
+            <span class="team-name" style="display: inline-flex; align-items: center; gap: 8px;">
+              <img [src]="getFlagUrl(result.countryCode, result.flagUrl)" class="team-flag-inline" alt="">
+              <span>{{ result.teamName }} ({{ result.teamCode }})</span>
               <span class="badge badge-success" *ngIf="session && result.rank <= (session.winnersCount || 1)" style="margin-left: 8px;">Winner</span>
             </span>
             <span class="vote-meta">{{ result.voteCount | number }} votes ({{ result.percentage | number:'1.1-1' }}%)</span>
@@ -44,6 +56,17 @@
                  [class.silver-bar]="result.rank === 2"
                  [class.bronze-bar]="result.rank === 3">
             </div>
+          </div>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-panel py-3 px-4 mt-4" *ngIf="totalPages > 1" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color);">
+          <div class="pagination-info" style="font-size: 0.85rem; color: var(--text-muted);">
+            Showing Page <strong>{{ pageNumber }}</strong> of <strong>{{ totalPages }}</strong> ({{ totalRecords }} total candidates)
+          </div>
+          <div class="pagination-buttons" style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary btn-sm" [disabled]="pageNumber === 1" (click)="prevPage()">Previous</button>
+            <button class="btn btn-secondary btn-sm" [disabled]="pageNumber === totalPages" (click)="nextPage()">Next</button>
           </div>
         </div>
       </div>

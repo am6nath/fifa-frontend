@@ -64,7 +64,7 @@ export class AuthService {
 
   // POST: Regular password login (User or Admin)
   login(email: string, password: string): Observable<ApiResponse<AuthResponse>> {
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.baseUrl}/login`, { email, password }).pipe(
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.baseUrl}/login`, { emailOrUsername: email, password }).pipe(
       tap(response => {
         if (response.success && response.data) {
           this.setSession(response.data);

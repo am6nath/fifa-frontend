@@ -15,8 +15,9 @@
 
 .vote-receipt {
   padding: 16px 24px;
-  background-color: rgba(255, 255, 255, 0.02);
-  border-radius: 12px;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 0px;
   font-size: 0.95rem;
   text-align: left;
   display: inline-block;
@@ -67,6 +68,8 @@
   cursor: pointer;
   position: relative;
   height: 100%;
+  border-radius: 0px; /* Sharp rectangles */
+  background-color: var(--bg-secondary);
 }
 
 .candidate-card.disabled {
@@ -76,8 +79,8 @@
 
 .candidate-card.selected {
   border-color: var(--primary);
-  box-shadow: 0 0 16px rgba(0, 230, 118, 0.15);
-  background-color: rgba(0, 230, 118, 0.02);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+  background-color: rgba(37, 99, 235, 0.02);
 }
 
 .selected-checkmark {
@@ -87,9 +90,9 @@
   width: 20px;
   height: 20px;
   background-color: var(--primary);
-  color: var(--bg-primary);
+  color: #ffffff;
   font-weight: 700;
-  border-radius: 50%;
+  border-radius: 0px; /* Square check indicator */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,8 +104,8 @@
   font-weight: 700;
   width: 60px;
   height: 40px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
+  background-color: #f3f4f6;
+  border-radius: 0px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,7 +118,7 @@
   width: 60px;
   height: 40px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 0px;
   border: 1px solid var(--border-color);
   margin-bottom: 16px;
 }
@@ -124,6 +127,7 @@
   font-size: 1.1rem;
   margin-bottom: 8px;
   text-align: center;
+  color: var(--text-main);
 }
 
 .candidate-meta {
@@ -135,7 +139,7 @@
 
 .candidate-region {
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
 }
@@ -143,7 +147,7 @@
 .candidate-group {
   font-size: 0.75rem;
   color: var(--accent);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* Actions Panel */
@@ -152,7 +156,8 @@
   flex-direction: column;
   align-items: center;
   padding: 24px;
-  background-color: rgba(255, 255, 255, 0.01);
+  background-color: var(--bg-secondary);
+  border-radius: 0px;
 }
 
 .voting-warning-text {
@@ -174,7 +179,7 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(0, 0, 0, 0.1);
   border-top: 2px solid currentColor;
   border-radius: 50%;
   animation: btn-spin 0.8s linear infinite;

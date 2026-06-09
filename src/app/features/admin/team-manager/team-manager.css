@@ -25,7 +25,7 @@
   width: 36px;
   height: 24px;
   background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 3px;
+  border-radius: 0px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,7 +37,7 @@
   width: 36px;
   height: 24px;
   object-fit: cover;
-  border-radius: 3px;
+  border-radius: 0px;
   border: 1px solid var(--border-color);
 }
 

@@ -18,7 +18,7 @@ export class LoginComponent {
   private route = inject(ActivatedRoute);
 
   loginForm: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    emailOrUsername: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(6)]]
   });
 
@@ -43,9 +43,9 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = null;
 
-    const { email, password } = this.loginForm.value;
+    const { emailOrUsername, password } = this.loginForm.value;
 
-    this.authService.login(email, password).subscribe({
+    this.authService.login(emailOrUsername, password).subscribe({
       next: (res) => {
         this.isLoading = false;
         if (res.success && res.data) {

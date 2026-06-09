@@ -37,7 +37,7 @@
   letter-spacing: 0.5rem;
   text-align: center;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 0px;
 }
 
 .form-control.is-invalid {

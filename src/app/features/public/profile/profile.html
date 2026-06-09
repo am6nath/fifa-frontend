@@ -1,47 +1,98 @@
 <div class="profile-page-wrapper container section-spacing animate-fade-in">
-  <app-loader *ngIf="isLoading" message="Retrieving voter profile..."></app-loader>
+  <app-loader *ngIf="isLoading && isLoadingVotes" message="Retrieving voter profile..."></app-loader>
 
   <div *ngIf="errorMessage" class="alert alert-danger mb-4">
     <span>Error: {{ errorMessage }}</span>
   </div>
 
-  <div class="glass-card profile-card" *ngIf="!isLoading && profile">
-    <header class="profile-header text-center mb-4">
-      <h2>{{ profile.userName }}</h2>
-      <p class="profile-role"><span class="badge badge-info">{{ profile.role }}</span></p>
-    </header>
+  <div class="profile-container" *ngIf="!isLoading && profile">
+    <!-- Left Column: Profile Card -->
+    <div class="glass-card profile-card">
+      <header class="profile-header text-center mb-4">
+        <h2>{{ profile.userName }}</h2>
+        <p class="profile-role"><span class="badge badge-info">{{ profile.role }}</span></p>
+      </header>
 
-    <div class="profile-details">
-      <div class="detail-row">
-        <span class="detail-label">Email Address</span>
-        <span class="detail-value">{{ profile.email }}</span>
+      <div class="profile-details">
+        <div class="detail-row">
+          <span class="detail-label">Email Address</span>
+          <span class="detail-value">{{ profile.email }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Verification Status</span>
+          <span class="detail-value">
+            <span class="badge badge-success" *ngIf="profile.emailVerified">Email Verified</span>
+            <span class="badge badge-danger" *ngIf="!profile.emailVerified">Unverified</span>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Account Status</span>
+          <span class="detail-value">
+            <span class="badge badge-success" *ngIf="profile.isActive">Active</span>
+            <span class="badge badge-danger" *ngIf="!profile.isActive">Banned / Deactivated</span>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Voting Participation</span>
+          <span class="detail-value"><strong class="accent-text">{{ profile.totalVotesCast }}</strong> votes submitted</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Joined Date</span>
+          <span class="detail-value text-mono">{{ profile.createdAt | date:'longDate' }}</span>
+        </div>
       </div>
-      <div class="detail-row">
-        <span class="detail-label">Verification Status</span>
-        <span class="detail-value">
-          <span class="badge badge-success" *ngIf="profile.emailVerified">Email Verified</span>
-          <span class="badge badge-danger" *ngIf="!profile.emailVerified">Unverified</span>
-        </span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Account Status</span>
-        <span class="detail-value">
-          <span class="badge badge-success" *ngIf="profile.isActive">Active</span>
-          <span class="badge badge-danger" *ngIf="!profile.isActive">Banned / Deactivated</span>
-        </span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Voting Participation</span>
-        <span class="detail-value"><strong class="accent-text">{{ profile.totalVotesCast }}</strong> votes submitted</span>
-      </div>
-      <div class="detail-row">
-        <span class="detail-label">Joined Date</span>
-        <span class="detail-value text-mono">{{ profile.createdAt | date:'longDate' }}</span>
+
+      <div class="profile-actions mt-5 text-center">
+        <a routerLink="/" class="btn btn-secondary">Back to Dashboard</a>
       </div>
     </div>
 
-    <div class="profile-actions mt-5 text-center">
-      <a routerLink="/" class="btn btn-secondary">Back to Dashboard</a>
+    <!-- Right Column: Voting History Card -->
+    <div class="glass-card history-card">
+      <header class="history-header mb-4">
+        <h3>My Voting History</h3>
+        <p class="history-subtitle">Track your cast votes and access published results.</p>
+      </header>
+
+      <app-loader *ngIf="isLoadingVotes" message="Loading voting ballots..."></app-loader>
+      <div *ngIf="votesErrorMessage" class="alert alert-danger mb-4">
+        <span>Error: {{ votesErrorMessage }}</span>
+      </div>
+
+      <div *ngIf="!isLoadingVotes && !votesErrorMessage">
+        <div class="votes-list" *ngIf="myVotes.length > 0; else noVotes">
+          <div class="vote-item" *ngFor="let vote of myVotes">
+            <div class="vote-main-info">
+              <div class="vote-header-info">
+                <span class="vote-session-title">{{ vote.sessionTitle }}</span>
+                <span class="vote-date">{{ vote.votedAt | date:'medium' }}</span>
+              </div>
+              <div class="vote-team-detail">
+                <img [src]="getFlagUrl(vote.teamCountryCode, vote.teamFlagUrl)" class="vote-team-flag" alt="">
+                <span class="vote-team-name">You voted for: <strong>{{ vote.teamName }}</strong></span>
+              </div>
+            </div>
+            
+            <div class="vote-status-actions">
+              <span class="badge badge-info" *ngIf="vote.resultsPublished">Results Published</span>
+              <span class="badge badge-warning" *ngIf="!vote.resultsPublished">Results Pending</span>
+              
+              <a *ngIf="vote.resultsPublished" [routerLink]="['/statistics', vote.votingSessionId]" class="btn btn-primary btn-sm flex-center">
+                <span>View Results</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noVotes>
+          <div class="empty-votes text-center py-5">
+            <div class="empty-votes-icon">🗳️</div>
+            <h4>No Votes Cast Yet</h4>
+            <p>You haven't participated in any voting sessions yet. Head back to the dashboard to view live polls!</p>
+            <a routerLink="/" class="btn btn-primary mt-3">Browse Active Polls</a>
+          </div>
+        </ng-template>
+      </div>
     </div>
   </div>
 </div>

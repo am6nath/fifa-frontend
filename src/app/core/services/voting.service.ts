@@ -40,8 +40,9 @@ export class VotingService {
   }
 
   // GET: Fetch active teams (all teams, optionally filtered)
-  getTeams(): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/Teams`);
+  getTeams(includeInactive: boolean = false): Observable<ApiResponse<any[]>> {
+    const params = new HttpParams().set('includeInactive', includeInactive.toString());
+    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/Teams`, { params });
   }
 
   // GET: Fetch a single team by ID
@@ -64,5 +65,10 @@ export class VotingService {
   hasVoted(sessionId: number): Observable<ApiResponse<boolean>> {
     let params = new HttpParams().set('sessionId', sessionId.toString());
     return this.http.get<ApiResponse<boolean>>(`${this.baseUrl}/Votes/has-voted`, { params });
+  }
+
+  // GET: Fetch the current user's complete voting history
+  getMyVoteHistory(): Observable<ApiResponse<any[]>> {
+    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/Votes/my-history`);
   }
 }

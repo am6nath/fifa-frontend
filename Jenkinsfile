@@ -58,4 +58,11 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            echo 'Deploying the updated frontend container...'
+            bat 'docker compose -f ../fifa-backend/docker-compose.yml up -d frontend'
+        }
+    }
 }

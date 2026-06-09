@@ -1,0 +1,36 @@
+<div class="teams-page-wrapper container section-spacing animate-fade-in">
+  <div class="glass-card page-header mb-5">
+    <div class="header-details">
+      <h2>FIFA World Cup Teams</h2>
+      <p>Official list of 32 pre-seeded candidate nations representing their groups and continental regions</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/" class="btn btn-secondary btn-sm">◀ Back to Dashboard</a>
+    </div>
+  </div>
+
+  <app-loader *ngIf="isLoading" message="Gathering team configurations..."></app-loader>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mb-4">
+    <span>⚠️ {{ errorMessage }}</span>
+  </div>
+
+  <!-- Group Showcase Grid -->
+  <div class="groups-grid" *ngIf="!isLoading && !errorMessage">
+    <div class="group-card glass-card" *ngFor="let key of groupKeys">
+      <div class="group-header">
+        <h3>Group {{ key }}</h3>
+      </div>
+      <ul class="group-teams-list">
+        <li class="group-team-item" *ngFor="let team of groups[key]">
+          <span class="team-flag" *ngIf="!team.logoUrl">{{ team.code }}</span>
+          <img class="team-logo" *ngIf="team.logoUrl" [src]="team.logoUrl" alt="{{ team.name }} flag">
+          <div class="team-details">
+            <span class="team-name">{{ team.name }}</span>
+            <span class="team-region">{{ team.region }}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

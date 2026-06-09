@@ -1,0 +1,119 @@
+<div class="team-manager-wrapper container section-spacing animate-fade-in">
+  <div class="glass-card page-header mb-4">
+    <div class="header-details">
+      <h2>Team Management</h2>
+      <p>Configure FIFA World Cup candidate nations and continental groups</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" (click)="openCreateModal()">＋ Add New Team</button>
+      <a routerLink="/admin" class="btn btn-secondary btn-sm">Admin Dashboard</a>
+    </div>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success mb-4">
+    <span>✅ {{ successMessage }}</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mb-4">
+    <span>⚠️ {{ errorMessage }}</span>
+  </div>
+
+  <app-loader *ngIf="isLoading" message="Fetching team configurations..."></app-loader>
+
+  <!-- Team Grid Table -->
+  <div class="table-container glass-card" *ngIf="!isLoading && teams.length > 0">
+    <table class="fifa-table">
+      <thead>
+        <tr>
+          <th>Logo</th>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Group</th>
+          <th>Region</th>
+          <th>Status</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let team of teams">
+          <td>
+            <span class="team-flag" *ngIf="!team.logoUrl">{{ team.code }}</span>
+            <img class="team-logo" *ngIf="team.logoUrl" [src]="team.logoUrl" alt="{{ team.name }} flag">
+          </td>
+          <td><strong class="text-mono">{{ team.code }}</strong></td>
+          <td><strong>{{ team.name }}</strong></td>
+          <td>Group {{ team.group }}</td>
+          <td><span class="badge badge-info">{{ team.region }}</span></td>
+          <td>
+            <span class="badge" [class.badge-success]="team.isActive" [class.badge-danger]="!team.isActive">
+              {{ team.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="text-right actions-cell">
+            <button class="btn btn-secondary btn-sm" (click)="toggleTeamStatus(team)">
+              {{ team.isActive ? 'Deactivate' : 'Activate' }}
+            </button>
+            <button class="btn btn-secondary btn-sm" (click)="openEditModal(team)">Edit</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteTeam(team.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Form Modal popup -->
+  <div class="modal-backdrop" *ngIf="showFormModal">
+    <div class="glass-card modal-container animate-fade-in">
+      <div class="modal-header mb-4">
+        <h3>{{ isEditing ? 'Edit FIFA Team' : 'Add New FIFA Team' }}</h3>
+        <button class="btn-close" (click)="closeModal()">×</button>
+      </div>
+
+      <form [formGroup]="teamForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="name" class="form-label">Team Name</label>
+          <input type="text" id="name" formControlName="name" class="form-control" placeholder="e.g. Argentina">
+          <div *ngIf="teamForm.get('name')?.invalid && teamForm.get('name')?.touched" class="form-error">
+            <span *ngIf="teamForm.get('name')?.errors?.['required']">Team Name is required.</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="code" class="form-label">Country Code</label>
+            <input type="text" id="code" formControlName="code" class="form-control" placeholder="e.g. ARG">
+            <div *ngIf="teamForm.get('code')?.invalid && teamForm.get('code')?.touched" class="form-error">
+              <span *ngIf="teamForm.get('code')?.errors?.['required']">Code is required.</span>
+            </div>
+          </div>
+
+          <div class="form-group half-width">
+            <label for="group" class="form-label">World Cup Group</label>
+            <input type="text" id="group" formControlName="group" class="form-control" placeholder="e.g. C">
+            <div *ngIf="teamForm.get('group')?.invalid && teamForm.get('group')?.touched" class="form-error">
+              <span *ngIf="teamForm.get('group')?.errors?.['required']">Group is required.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="region" class="form-label">Continental Region</label>
+          <input type="text" id="region" formControlName="region" class="form-control" placeholder="e.g. South America">
+          <div *ngIf="teamForm.get('region')?.invalid && teamForm.get('region')?.touched" class="form-error">
+            <span *ngIf="teamForm.get('region')?.errors?.['required']">Region is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="logoUrl" class="form-label">Flag / Emblem Logo URL (Optional)</label>
+          <input type="text" id="logoUrl" formControlName="logoUrl" class="form-control" placeholder="e.g. https://domain.com/flag.png">
+        </div>
+
+        <div class="modal-actions mt-4">
+          <button type="submit" class="btn btn-primary">{{ isEditing ? 'Save Changes' : 'Create Team' }}</button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

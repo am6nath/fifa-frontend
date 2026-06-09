@@ -1,0 +1,88 @@
+<div class="cast-vote-wrapper container section-spacing animate-fade-in">
+  <app-loader *ngIf="isLoading" message="Preparing ballot papers..."></app-loader>
+
+  <div *ngIf="!isLoading">
+    <!-- Already Voted Screen -->
+    <div class="glass-card voted-screen text-center py-5" *ngIf="hasVoted">
+      <span class="voted-icon">🎉</span>
+      <h2>Ballot Submitted</h2>
+      <div class="alert alert-success my-4" *ngIf="successMessage">
+        <span>{{ successMessage }}</span>
+      </div>
+      <p class="voted-text">
+        You have already cast your vote in this session.
+      </p>
+      <div class="vote-receipt glass-card my-4" *ngIf="myVoteDetails">
+        <p><strong>Receipt Details</strong></p>
+        <p>Voted Team: <span class="accent-text">{{ myVoteDetails.teamName }}</span></p>
+        <p class="receipt-date">Date: {{ myVoteDetails.votedAt | date:'medium' }}</p>
+      </div>
+      <div class="voted-actions mt-4">
+        <a [routerLink]="['/results', sessionId]" [queryParams]="{live: 'true'}" class="btn btn-primary">View Live Standings</a>
+        <a routerLink="/" class="btn btn-secondary">Back to Dashboard</a>
+      </div>
+    </div>
+
+    <!-- Active Voting Screen -->
+    <div class="voting-screen" *ngIf="!hasVoted && session">
+      <header class="voting-header mb-5">
+        <span class="voting-icon-header">🗳️</span>
+        <h2>{{ session.title }}</h2>
+        <p class="session-desc-text">{{ session.description }}</p>
+        <div class="session-restrictions mt-3">
+          <span class="badge badge-warning" *ngIf="session.regionFilter">Eligible Region: {{ session.regionFilter }}</span>
+          <span class="badge badge-info">One Vote Per User</span>
+        </div>
+      </header>
+
+      <div *ngIf="errorMessage" class="alert alert-danger mb-4">
+        <span>⚠️ {{ errorMessage }}</span>
+      </div>
+
+      <!-- Candidate Grid -->
+      <div class="candidates-section">
+        <h3 class="mb-4">Select Your Candidate</h3>
+        
+        <div class="candidates-grid" *ngIf="eligibleCandidates.length > 0; else noCandidates">
+          <div class="candidate-card glass-card" 
+               *ngFor="let candidate of eligibleCandidates"
+               [class.selected]="selectedTeamId === candidate.id"
+               [class.disabled]="isCasting"
+               (click)="selectTeam(candidate.id)">
+            <div class="selected-checkmark" *ngIf="selectedTeamId === candidate.id">✓</div>
+            <span class="candidate-flag" *ngIf="!candidate.logoUrl">{{ candidate.code }}</span>
+            <img class="candidate-logo" *ngIf="candidate.logoUrl" [src]="candidate.logoUrl" alt="{{ candidate.name }} flag">
+            <h4 class="candidate-name">{{ candidate.name }}</h4>
+            <div class="candidate-meta">
+              <span class="candidate-region">{{ candidate.region }}</span>
+              <span class="candidate-group">Group {{ candidate.group }}</span>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noCandidates>
+          <div class="glass-card empty-state text-center py-5">
+            <span class="empty-icon">🏳️</span>
+            <h3>No Eligible Candidates</h3>
+            <p>No teams match this session's configuration criteria (subset/region filter).</p>
+          </div>
+        </ng-template>
+
+        <!-- Form Submit Actions -->
+        <div class="voting-actions-panel mt-5 glass-card" *ngIf="eligibleCandidates.length > 0">
+          <p class="voting-warning-text" *ngIf="!selectedTeamId">Please select a candidate from the list above to lock your vote.</p>
+          <p class="voting-warning-text warning-active" *ngIf="selectedTeamId">
+            ⚠️ <strong>Warning</strong>: Submitting will lock your selection permanently. You cannot edit or cast another vote.
+          </p>
+          <div class="buttons-row mt-4">
+            <button class="btn btn-primary" [disabled]="!selectedTeamId || isCasting" (click)="submitVote()">
+              <span *ngIf="isCasting" class="btn-spinner"></span>
+              {{ isCasting ? 'Locking Vote in DB...' : 'Submit Sealed Vote' }}
+            </button>
+            <a routerLink="/" class="btn btn-secondary" [class.disabled]="isCasting">Cancel</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

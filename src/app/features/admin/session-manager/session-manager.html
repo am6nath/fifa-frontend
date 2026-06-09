@@ -1,0 +1,157 @@
+<div class="session-manager-wrapper container section-spacing animate-fade-in">
+  <div class="glass-card page-header mb-4">
+    <div class="header-details">
+      <h2>Voting Session Builder</h2>
+      <p>Configure live fan polls, regional restrictions, and candidate lists</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" (click)="openCreateModal()">＋ Create New Session</button>
+      <a routerLink="/admin" class="btn btn-secondary btn-sm">Admin Dashboard</a>
+    </div>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success mb-4">
+    <span>✅ {{ successMessage }}</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mb-4">
+    <span>⚠️ {{ errorMessage }}</span>
+  </div>
+
+  <app-loader *ngIf="isLoading" message="Loading voting sessions..."></app-loader>
+
+  <!-- Sessions Grid Table -->
+  <div class="table-container glass-card" *ngIf="!isLoading && sessions.length > 0">
+    <table class="fifa-table">
+      <thead>
+        <tr>
+          <th>Session Details</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Restrictions</th>
+          <th>Status</th>
+          <th>Published</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let session of sessions">
+          <td>
+            <strong class="session-table-title">{{ session.title }}</strong>
+            <p class="session-table-desc">{{ session.description }}</p>
+          </td>
+          <td><span class="text-mono">{{ session.startTime | date:'short' }}</span></td>
+          <td><span class="text-mono">{{ session.endTime | date:'short' }}</span></td>
+          <td>
+            <span class="badge badge-warning" *ngIf="session.regionFilter">{{ session.regionFilter }} Only</span>
+            <span class="badge badge-info" *ngIf="session.teamIds && session.teamIds.length > 0">Subset ({{ session.teamIds.length }} Teams)</span>
+            <span class="badge badge-secondary" *ngIf="!session.regionFilter && (!session.teamIds || session.teamIds.length === 0)">None (All Candidates)</span>
+          </td>
+          <td>
+            <span class="badge" 
+                  [class.badge-success]="session.status === 'Active'" 
+                  [class.badge-warning]="session.status === 'Upcoming'"
+                  [class.badge-danger]="session.status === 'Closed'">
+              {{ session.status }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" [class.badge-success]="session.isPublished" [class.badge-secondary]="!session.isPublished">
+              {{ session.isPublished ? 'Yes' : 'No' }}
+            </span>
+          </td>
+          <td class="text-right actions-cell">
+            <button class="btn btn-danger btn-sm" *ngIf="session.status === 'Active'" (click)="closeSession(session.id)">
+              Close Session
+            </button>
+            <button class="btn btn-accent btn-sm" *ngIf="session.status === 'Closed' && !session.isPublished" (click)="publishSession(session.id)">
+              Publish Results
+            </button>
+            <a [routerLink]="['/results', session.id]" class="btn btn-secondary btn-sm" *ngIf="session.isPublished">
+              View Results
+            </a>
+            <a [routerLink]="['/results', session.id]" [queryParams]="{live: 'true'}" class="btn btn-secondary btn-sm" *ngIf="session.status === 'Active'">
+              Live Standings
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Create Modal Form Popup -->
+  <div class="modal-backdrop" *ngIf="showCreateModal">
+    <div class="glass-card modal-container animate-fade-in">
+      <div class="modal-header mb-4">
+        <h3>Create Voting Session</h3>
+        <button class="btn-close" (click)="closeModal()">×</button>
+      </div>
+
+      <form [formGroup]="sessionForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="title" class="form-label">Session Title</label>
+          <input type="text" id="title" formControlName="title" class="form-control" placeholder="e.g. World Cup 2026 Champion">
+          <div *ngIf="sessionForm.get('title')?.invalid && sessionForm.get('title')?.touched" class="form-error">
+            <span *ngIf="sessionForm.get('title')?.errors?.['required']">Session Title is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description" class="form-label">Description / Question</label>
+          <textarea id="description" formControlName="description" class="form-control" placeholder="e.g. Who do you think will lift the trophy?"></textarea>
+          <div *ngIf="sessionForm.get('description')?.invalid && sessionForm.get('description')?.touched" class="form-error">
+            <span *ngIf="sessionForm.get('description')?.errors?.['required']">Description is required.</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="startTime" class="form-label">Start Date & Time</label>
+            <input type="datetime-local" id="startTime" formControlName="startTime" class="form-control">
+            <div *ngIf="sessionForm.get('startTime')?.invalid && sessionForm.get('startTime')?.touched" class="form-error">
+              <span *ngIf="sessionForm.get('startTime')?.errors?.['required']">Start time is required.</span>
+            </div>
+          </div>
+
+          <div class="form-group half-width">
+            <label for="endTime" class="form-label">End Date & Time</label>
+            <input type="datetime-local" id="endTime" formControlName="endTime" class="form-control">
+            <div *ngIf="sessionForm.get('endTime')?.invalid && sessionForm.get('endTime')?.touched" class="form-error">
+              <span *ngIf="sessionForm.get('endTime')?.errors?.['required']">End time is required.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="regionFilter" class="form-label">Regional Constraint (Optional)</label>
+          <select id="regionFilter" formControlName="regionFilter" class="form-control form-select">
+            <option value="">No restriction (All regions)</option>
+            <option value="Asia">Asia Only</option>
+            <option value="Europe">Europe Only</option>
+            <option value="Africa">Africa Only</option>
+            <option value="North America">North America Only</option>
+            <option value="South America">South America Only</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Restrict Candidates List (Optional Subset)</label>
+          <div class="team-checkbox-list glass-card">
+            <div class="team-check-item" *ngFor="let team of teams" (click)="toggleTeamSelection(team.id)">
+              <div class="checkbox-box" [class.checked]="isTeamSelected(team.id)">
+                <span *ngIf="isTeamSelected(team.id)">✓</span>
+              </div>
+              <span class="team-check-text">{{ team.name }} ({{ team.code }}) — {{ team.region }}</span>
+            </div>
+          </div>
+          <p class="checkbox-hint-text">Leave all unchecked to include all active teams meeting the region criteria.</p>
+        </div>
+
+        <div class="modal-actions mt-4">
+          <button type="submit" class="btn btn-primary">Publish Session</button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

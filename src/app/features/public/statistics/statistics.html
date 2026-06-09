@@ -1,0 +1,56 @@
+<div class="statistics-wrapper container section-spacing animate-fade-in">
+  <div class="glass-card results-card">
+    <header class="results-header">
+      <span class="results-icon">📊</span>
+      <h2>{{ sessionTitle }}</h2>
+      <div class="status-indicator mt-2" *ngIf="isLive">
+        <span class="live-dot"></span> Live Standings (Updating Real-Time)
+      </div>
+      <p class="results-subtitle" *ngIf="!isLoading && results.length > 0">
+        Total votes cast: <strong class="accent-text">{{ totalVotes | number }}</strong>
+      </p>
+    </header>
+
+    <app-loader *ngIf="isLoading" message="Fetching election statistics..."></app-loader>
+
+    <div *ngIf="errorMessage" class="alert alert-danger my-4">
+      <span>⚠️ {{ errorMessage }}</span>
+    </div>
+
+    <!-- Results Display -->
+    <div *ngIf="!isLoading && !errorMessage">
+      <div class="results-list" *ngIf="results.length > 0; else noVotes">
+        <div class="result-row" *ngFor="let result of results; let i = index">
+          <div class="result-info">
+            <span class="rank-number" [class.gold]="result.rank === 1" [class.silver]="result.rank === 2" [class.bronze]="result.rank === 3">
+              #{{ result.rank }}
+            </span>
+            <span class="team-name">{{ result.teamName }} ({{ result.teamCode }})</span>
+            <span class="vote-meta">{{ result.voteCount | number }} votes ({{ result.percentage | number:'1.1-1' }}%)</span>
+          </div>
+          
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" 
+                 [style.width.%]="result.percentage"
+                 [class.gold-bar]="result.rank === 1"
+                 [class.silver-bar]="result.rank === 2"
+                 [class.bronze-bar]="result.rank === 3">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noVotes>
+        <div class="empty-results text-center py-5">
+          <span class="empty-icon">📭</span>
+          <h3>No Votes Recorded</h3>
+          <p>No votes have been recorded for this voting session yet.</p>
+        </div>
+      </ng-template>
+
+      <div class="actions-section mt-5 text-center">
+        <a routerLink="/" class="btn btn-secondary">Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <a routerLink="/" class="nav-logo">
+      <span class="logo-icon">⚽</span>
+      <span class="logo-text">FIFA <span class="accent-text">VOTE</span></span>
+    </a>
+
+    <div class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">Dashboard</a>
+      
+      <!-- Public or Authenticated Users can view Teams -->
+      <a routerLink="/teams" routerLinkActive="active" class="nav-item">Teams</a>
+      
+      <!-- Admin specific link -->
+      <a *ngIf="authService.isAdmin()" routerLink="/admin" routerLinkActive="active" class="nav-item admin-badge-link">
+        <span class="admin-dot"></span> Admin Panel
+      </a>
+    </div>
+
+    <div class="nav-actions">
+      <ng-container *ngIf="authService.currentUser(); else guestUser">
+        <span class="user-welcome">
+          Welcome, <strong routerLink="/profile" class="user-link">{{ authService.currentUsername() }}</strong>
+        </span>
+        <button class="btn btn-secondary btn-sm" (click)="logout()">Logout</button>
+      </ng-container>
+
+      <ng-template #guestUser>
+        <a routerLink="/auth/login" class="btn btn-secondary btn-sm">Login</a>
+        <a routerLink="/auth/register" class="btn btn-primary btn-sm">Register</a>
+      </ng-template>
+    </div>
+  </div>
+</nav>

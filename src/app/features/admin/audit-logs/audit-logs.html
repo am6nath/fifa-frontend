@@ -1,0 +1,102 @@
+<div class="audit-logs-wrapper container section-spacing animate-fade-in">
+  <div class="glass-card page-header mb-4">
+    <div class="header-details">
+      <h2>Audit & Security Logs</h2>
+      <p>Audit trail of user logins, registrations, voting session changes, and voter logs</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/admin" class="btn btn-secondary btn-sm">Admin Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Filters Toolbar Panel -->
+  <div class="filter-panel glass-card mb-4">
+    <form (submit)="applyFilters()" class="filter-form">
+      <div class="filter-inputs-row">
+        <div class="filter-group">
+          <label class="form-label" for="username">Username</label>
+          <input type="text" id="username" [(ngModel)]="filterUsername" name="username" class="form-control" placeholder="Search user...">
+        </div>
+        <div class="filter-group">
+          <label class="form-label" for="action">Action</label>
+          <select id="action" [(ngModel)]="filterAction" name="action" class="form-control form-select">
+            <option value="">All Actions</option>
+            <option value="LOGIN">LOGIN</option>
+            <option value="REGISTER">REGISTER</option>
+            <option value="VOTE">VOTE</option>
+            <option value="CREATE">CREATE</option>
+            <option value="UPDATE">UPDATE</option>
+            <option value="DELETE">DELETE</option>
+            <option value="CLOSE">CLOSE</option>
+            <option value="PUBLISH">PUBLISH</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="form-label" for="entityName">Target Entity</label>
+          <input type="text" id="entityName" [(ngModel)]="filterEntityName" name="entityName" class="form-control" placeholder="e.g. Vote">
+        </div>
+      </div>
+      <div class="filter-actions mt-3">
+        <button type="submit" class="btn btn-primary btn-sm">Apply Filters</button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="resetFilters()">Reset</button>
+      </div>
+    </form>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mb-4">
+    <span>⚠️ {{ errorMessage }}</span>
+  </div>
+
+  <app-loader *ngIf="isLoading" message="Fetching security audit logs..."></app-loader>
+
+  <!-- Logs Table -->
+  <div class="table-container glass-card" *ngIf="!isLoading && logs.length > 0">
+    <table class="fifa-table">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>User</th>
+          <th>Action</th>
+          <th>Entity</th>
+          <th>Activity Details</th>
+          <th>IP Address</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let log of logs">
+          <td><span class="text-mono">{{ log.createdAt | date:'medium' }}</span></td>
+          <td><strong>{{ log.userName || 'Anonymous' }}</strong></td>
+          <td>
+            <span class="badge" 
+                  [class.badge-success]="log.action === 'LOGIN' || log.action === 'PUBLISH'" 
+                  [class.badge-info]="log.action === 'REGISTER' || log.action === 'VOTE'"
+                  [class.badge-warning]="log.action === 'CREATE' || log.action === 'UPDATE' || log.action === 'CLOSE'"
+                  [class.badge-danger]="log.action === 'DELETE'">
+              {{ log.action }}
+            </span>
+          </td>
+          <td><span class="badge badge-secondary">{{ log.entityName }}</span></td>
+          <td><p class="log-details-text">{{ log.details }}</p></td>
+          <td><span class="text-mono">{{ log.ipAddress || 'Unknown' }}</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination controls -->
+    <div class="pagination-panel py-3 px-4">
+      <div class="pagination-info">
+        Showing Page <strong>{{ pageNumber }}</strong> of <strong>{{ totalPages }}</strong> ({{ totalRecords }} total audit entries)
+      </div>
+      <div class="pagination-buttons">
+        <button class="btn btn-secondary btn-sm" [disabled]="pageNumber === 1" (click)="prevPage()">◀ Previous</button>
+        <button class="btn btn-secondary btn-sm" [disabled]="pageNumber === totalPages" (click)="nextPage()">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass-card empty-state text-center py-5" *ngIf="!isLoading && logs.length === 0">
+    <span class="empty-icon">📂</span>
+    <h3>No Audit Records</h3>
+    <p>No audit logs matched the specified filters.</p>
+  </div>
+</div>

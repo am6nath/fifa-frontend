@@ -1,0 +1,53 @@
+<div class="auth-wrapper section-spacing animate-fade-in">
+  <div class="glass-card auth-card">
+    <div class="auth-header">
+      <span class="auth-icon">📩</span>
+      <h2>Verify OTP</h2>
+      <p class="auth-subtitle">We have sent a 6-digit verification code to <br><strong class="highlight-email">{{ email }}</strong></p>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      <span>⚠️ {{ errorMessage }}</span>
+    </div>
+
+    <div *ngIf="successMessage" class="alert alert-success">
+      <span>✅ {{ successMessage }}</span>
+    </div>
+
+    <form [formGroup]="otpForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="otpCode" class="form-label text-center d-block">Enter 6-Digit Code</label>
+        <input 
+          type="text" 
+          id="otpCode" 
+          formControlName="otpCode" 
+          class="form-control otp-input" 
+          placeholder="000000"
+          maxlength="6"
+          autocomplete="off"
+          [class.is-invalid]="otpForm.get('otpCode')?.invalid && otpForm.get('otpCode')?.touched">
+        <div *ngIf="otpForm.get('otpCode')?.invalid && otpForm.get('otpCode')?.touched" class="form-error text-center">
+          <span *ngIf="otpForm.get('otpCode')?.errors?.['required']">Verification code is required.</span>
+          <span *ngIf="otpForm.get('otpCode')?.errors?.['pattern']">OTP must be exactly 6 numeric digits.</span>
+        </div>
+      </div>
+
+      <div class="timer-section text-center my-4">
+        <span class="timer-label">Code expires in:</span>
+        <span class="timer-clock" [class.danger]="timerValue < 60">{{ timerDisplay }}</span>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block w-100 mt-4" [disabled]="isLoading || timerValue <= 0">
+        <span *ngIf="isLoading" class="btn-spinner"></span>
+        {{ isLoading ? 'Verifying...' : 'Verify & Sign In' }}
+      </button>
+
+      <div class="auth-footer mt-4">
+        <p>Didn't receive the email? 
+          <button type="button" class="btn-link" (click)="resendOtp()" [disabled]="timerValue > 240">Resend Code</button>
+        </p>
+        <p class="mt-2"><a routerLink="/auth/login">Back to Login</a></p>
+      </div>
+    </form>
+  </div>
+</div>

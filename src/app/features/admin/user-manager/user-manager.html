@@ -1,0 +1,102 @@
+<div class="user-manager-wrapper container section-spacing animate-fade-in">
+  <div class="glass-card page-header mb-4">
+    <div class="header-details">
+      <h2>User Access Control</h2>
+      <p>Monitor panelist accounts, view voting contributions, and toggle account states</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/admin" class="btn btn-secondary btn-sm">Admin Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Search Filter Panel -->
+  <div class="search-panel glass-card mb-4">
+    <form (submit)="onSearch()" class="search-form">
+      <div class="search-input-group">
+        <span class="search-icon-decor">🔍</span>
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          name="search" 
+          class="form-control search-control" 
+          placeholder="Search by Name or Email...">
+        <button type="button" class="btn-clear" *ngIf="searchTerm" (click)="onClearSearch()">×</button>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm">Search</button>
+    </form>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success mb-4">
+    <span>✅ {{ successMessage }}</span>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mb-4">
+    <span>⚠️ {{ errorMessage }}</span>
+  </div>
+
+  <app-loader *ngIf="isLoading" message="Fetching voter roster..."></app-loader>
+
+  <!-- Users list -->
+  <div class="table-container glass-card" *ngIf="!isLoading && users.length > 0">
+    <table class="fifa-table">
+      <thead>
+        <tr>
+          <th>User Info</th>
+          <th>Role</th>
+          <th>Verified</th>
+          <th>Votes Cast</th>
+          <th>Joined Date</th>
+          <th>Status</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>
+            <strong class="user-table-name">{{ user.userName }}</strong>
+            <p class="user-table-email">{{ user.email }}</p>
+          </td>
+          <td><span class="badge badge-info">{{ user.role }}</span></td>
+          <td>
+            <span class="badge" [class.badge-success]="user.emailVerified" [class.badge-danger]="!user.emailVerified">
+              {{ user.emailVerified ? 'Verified' : 'Unverified' }}
+            </span>
+          </td>
+          <td><strong class="text-mono">{{ user.totalVotesCast }}</strong></td>
+          <td><span class="text-mono">{{ user.createdAt | date:'shortDate' }}</span></td>
+          <td>
+            <span class="badge" [class.badge-success]="user.isActive" [class.badge-danger]="!user.isActive">
+              {{ user.isActive ? 'Active' : 'Blocked' }}
+            </span>
+          </td>
+          <td class="text-right actions-cell">
+            <button 
+              class="btn btn-sm" 
+              [class.btn-danger]="user.isActive" 
+              [class.btn-primary]="!user.isActive"
+              (click)="toggleUserActive(user)">
+              {{ user.isActive ? 'Block User' : 'Activate User' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-panel py-3 px-4">
+      <div class="pagination-info">
+        Showing Page <strong>{{ pageNumber }}</strong> of <strong>{{ totalPages }}</strong> ({{ totalRecords }} total voter records)
+      </div>
+      <div class="pagination-buttons">
+        <button class="btn btn-secondary btn-sm" [disabled]="pageNumber === 1" (click)="prevPage()">◀ Previous</button>
+        <button class="btn btn-secondary btn-sm" [disabled]="pageNumber === totalPages" (click)="nextPage()">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass-card empty-state text-center py-5" *ngIf="!isLoading && users.length === 0">
+    <span class="empty-icon">👥</span>
+    <h3>No Voters Found</h3>
+    <p>No user accounts matched the specified search criteria.</p>
+  </div>
+</div>

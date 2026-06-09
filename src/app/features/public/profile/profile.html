@@ -1,0 +1,48 @@
+<div class="profile-page-wrapper container section-spacing animate-fade-in">
+  <app-loader *ngIf="isLoading" message="Retrieving voter profile..."></app-loader>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mb-4">
+    <span>⚠️ {{ errorMessage }}</span>
+  </div>
+
+  <div class="glass-card profile-card" *ngIf="!isLoading && profile">
+    <header class="profile-header text-center mb-4">
+      <span class="profile-avatar">👤</span>
+      <h2>{{ profile.userName }}</h2>
+      <p class="profile-role"><span class="badge badge-info">{{ profile.role }}</span></p>
+    </header>
+
+    <div class="profile-details">
+      <div class="detail-row">
+        <span class="detail-label">Email Address</span>
+        <span class="detail-value">{{ profile.email }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Verification Status</span>
+        <span class="detail-value">
+          <span class="badge badge-success" *ngIf="profile.emailVerified">Email Verified</span>
+          <span class="badge badge-danger" *ngIf="!profile.emailVerified">Unverified</span>
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Account Status</span>
+        <span class="detail-value">
+          <span class="badge badge-success" *ngIf="profile.isActive">Active</span>
+          <span class="badge badge-danger" *ngIf="!profile.isActive">Banned / Deactivated</span>
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Voting Participation</span>
+        <span class="detail-value"><strong class="accent-text">{{ profile.totalVotesCast }}</strong> votes submitted</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Joined Date</span>
+        <span class="detail-value text-mono">{{ profile.createdAt | date:'longDate' }}</span>
+      </div>
+    </div>
+
+    <div class="profile-actions mt-5 text-center">
+      <a routerLink="/" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+  </div>
+</div>

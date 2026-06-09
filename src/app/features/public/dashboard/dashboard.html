@@ -1,0 +1,109 @@
+<div class="dashboard-wrapper container section-spacing animate-fade-in">
+  <!-- Hero Section -->
+  <header class="hero-section glass-card mb-5">
+    <div class="hero-content">
+      <span class="hero-badge">2026 FIFA World Cup Fan Vote</span>
+      <h1>Shape the World Cup Narrative</h1>
+      <p class="hero-text">Cast your vote in live matches, tournament predictions, and awards polls. Join millions of fans worldwide.</p>
+      <div class="hero-buttons">
+        <a *ngIf="!authService.isAuthenticated()" routerLink="/auth/register" class="btn btn-primary">Join the Voting Panel</a>
+        <a routerLink="/teams" class="btn btn-secondary">Explore FIFA Teams</a>
+      </div>
+    </div>
+    <div class="hero-visual">⚽</div>
+  </header>
+
+  <app-loader *ngIf="isLoading" message="Fetching live FIFA dashboard data..."></app-loader>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mb-4">
+    <span>⚠️ {{ errorMessage }}</span>
+  </div>
+
+  <ng-container *ngIf="!isLoading && !errorMessage">
+    <!-- Stat Cards Grid -->
+    <section class="stats-grid mb-5" *ngIf="stats">
+      <div class="stat-card glass-card">
+        <span class="stat-icon">👥</span>
+        <div class="stat-details">
+          <h3>{{ stats.totalUsers | number }}</h3>
+          <p>Registered Panelists</p>
+        </div>
+      </div>
+      <div class="stat-card glass-card">
+        <span class="stat-icon">🗳️</span>
+        <div class="stat-details">
+          <h3>{{ stats.totalVotes | number }}</h3>
+          <p>Total Votes Cast</p>
+        </div>
+      </div>
+      <div class="stat-card glass-card">
+        <span class="stat-icon">🔥</span>
+        <div class="stat-details">
+          <h3>{{ stats.activeSessions }}</h3>
+          <p>Active Voting Polls</p>
+        </div>
+      </div>
+      <div class="stat-card glass-card">
+        <span class="stat-icon">🏳️</span>
+        <div class="stat-details">
+          <h3>{{ stats.totalTeams }}</h3>
+          <p>FIFA Teams Seeded</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Active Sessions Section -->
+    <section class="sessions-section mb-5">
+      <div class="section-header mb-4">
+        <h2>Live Voting Polls</h2>
+        <p>Participate in these active sessions now. Only registered users are eligible to submit votes.</p>
+      </div>
+
+      <div class="sessions-grid" *ngIf="activeSessions.length > 0; else noSessions">
+        <div class="session-card glass-card" *ngFor="let session of activeSessions">
+          <div class="session-status-badge">
+            <span class="badge badge-success">Live Now</span>
+            <span class="session-region" *ngIf="session.regionFilter">Region: {{ session.regionFilter }}</span>
+          </div>
+          <h3 class="session-title">{{ session.title }}</h3>
+          <p class="session-desc">{{ session.description }}</p>
+          <div class="session-meta">
+            <span>Ends: {{ session.endTime | date:'medium' }}</span>
+          </div>
+          <div class="session-actions mt-4">
+            <a *ngIf="authService.isAuthenticated()" [routerLink]="['/vote', session.id]" class="btn btn-primary w-100">Cast Your Vote</a>
+            <a *ngIf="!authService.isAuthenticated()" routerLink="/auth/login" class="btn btn-secondary w-100">Sign In to Vote</a>
+          </div>
+        </div>
+      </div>
+      <ng-template #noSessions>
+        <div class="glass-card empty-state text-center py-5">
+          <span class="empty-icon">📅</span>
+          <h3>No Active Sessions</h3>
+          <p>There are no live voting polls running at the moment. Please check back later!</p>
+        </div>
+      </ng-template>
+    </section>
+
+    <!-- Teams Seeded Showcase -->
+    <section class="teams-showcase-section">
+      <div class="section-header mb-4">
+        <h2>FIFA Candidate Teams</h2>
+        <p>Browse through the seeded candidate nations representing regions and groups.</p>
+      </div>
+      <div class="teams-grid">
+        <div class="team-showcard glass-card" *ngFor="let team of teams | slice:0:8">
+          <span class="team-flag" *ngIf="!team.logoUrl">{{ team.code }}</span>
+          <img class="team-logo" *ngIf="team.logoUrl" [src]="team.logoUrl" alt="{{ team.name }} flag">
+          <div class="team-info">
+            <h4>{{ team.name }}</h4>
+            <span class="badge badge-info">{{ team.region }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="text-center mt-4" *ngIf="teams.length > 8">
+        <a routerLink="/teams" class="btn btn-secondary">View All {{ teams.length }} Teams</a>
+      </div>
+    </section>
+  </ng-container>
+</div>

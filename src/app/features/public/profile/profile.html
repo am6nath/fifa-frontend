@@ -77,7 +77,7 @@
               <span class="badge badge-info" *ngIf="vote.resultsPublished">Results Published</span>
               <span class="badge badge-warning" *ngIf="!vote.resultsPublished">Results Pending</span>
               
-              <a *ngIf="vote.resultsPublished" [routerLink]="['/statistics', vote.votingSessionId]" class="btn btn-primary btn-sm flex-center">
+              <a *ngIf="vote.resultsPublished" [routerLink]="['/results', vote.votingSessionId]" class="btn btn-primary btn-sm flex-center">
                 <span>View Results</span>
               </a>
             </div>

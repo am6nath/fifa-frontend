@@ -71,4 +71,9 @@ export class VotingService {
   getMyVoteHistory(): Observable<ApiResponse<any[]>> {
     return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/Votes/my-history`);
   }
+
+  // GET: Fetch all voting sessions (active, upcoming, closed)
+  getAllSessions(): Observable<ApiResponse<VotingSession[]>> {
+    return this.http.get<ApiResponse<VotingSession[]>>(`${this.baseUrl}/voting-sessions`);
+  }
 }

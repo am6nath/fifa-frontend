@@ -20,6 +20,7 @@ export class DashboardComponent implements OnInit {
 
   stats: DashboardStats | null = null;
   activeSessions: VotingSession[] = [];
+  publishedSessions: VotingSession[] = [];
   teams: any[] = [];
   isLoading = true;
   errorMessage: string | null = null;
@@ -45,6 +46,14 @@ export class DashboardComponent implements OnInit {
           this.activeSessions = Array.isArray(res.data) ? res.data : [res.data];
         } else {
           this.activeSessions = [];
+        }
+      }
+    });
+
+    this.votingService.getAllSessions().subscribe({
+      next: (res) => {
+        if (res.success && res.data) {
+          this.publishedSessions = res.data.filter(s => s.resultsPublished);
         }
       }
     });

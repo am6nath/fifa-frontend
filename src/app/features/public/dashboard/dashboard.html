@@ -79,6 +79,31 @@
       </ng-template>
     </section>
 
+    <!-- Published Sessions Section -->
+    <section class="sessions-section mb-5" *ngIf="publishedSessions.length > 0">
+      <div class="section-header mb-4">
+        <h2>Official Poll Results</h2>
+        <p>Browse official final standings and winners of closed voting sessions.</p>
+      </div>
+
+      <div class="sessions-grid">
+        <div class="session-card glass-card" *ngFor="let session of publishedSessions">
+          <div class="session-status-badge">
+            <span class="badge badge-success" style="background-color: #10b981; border-color: transparent;">Results Published</span>
+            <span class="session-region" *ngIf="session.regionFilter">Region: {{ session.regionFilter }}</span>
+          </div>
+          <h3 class="session-title">{{ session.title }}</h3>
+          <p class="session-desc" *ngIf="session.notes">{{ session.notes }}</p>
+          <div class="session-meta">
+            <span>Total Votes: <strong>{{ session.totalVotes | number }}</strong></span>
+          </div>
+          <div class="session-actions mt-4">
+            <a [routerLink]="['/results', session.id]" class="btn btn-primary w-100">View Official Results</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Teams Seeded Showcase -->
     <section class="teams-showcase-section">
       <div class="section-header mb-4">

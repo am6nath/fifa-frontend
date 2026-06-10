@@ -41,6 +41,22 @@ export class SessionManagerComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadSessionsAndTeams();
+    this.sessionForm.get('regionFilter')?.valueChanges.subscribe(region => {
+      if (region) {
+        this.selectedTeamsList = this.selectedTeamsList.filter(id => {
+          const team = this.teams.find(t => t.id === id);
+          return team && team.region.toLowerCase() === region.toLowerCase();
+        });
+      }
+    });
+  }
+
+  getFilteredTeams(): Team[] {
+    const region = this.sessionForm.get('regionFilter')?.value;
+    if (!region) {
+      return this.teams;
+    }
+    return this.teams.filter(t => t.region.toLowerCase() === region.toLowerCase());
   }
 
   loadSessionsAndTeams(): void {

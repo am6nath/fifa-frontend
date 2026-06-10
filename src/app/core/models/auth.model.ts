@@ -12,7 +12,7 @@ export interface UserProfile {
   role: string;
   isActive: boolean;
   emailVerified: boolean;
-  totalVotesCast: number;
+  voteCount: number;
   createdAt: string;
   updatedAt: string;
 }

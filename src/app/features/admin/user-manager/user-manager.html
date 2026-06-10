@@ -61,7 +61,7 @@
               {{ user.emailVerified ? 'Verified' : 'Unverified' }}
             </span>
           </td>
-          <td><strong class="text-mono">{{ user.totalVotesCast }}</strong></td>
+          <td><strong class="text-mono">{{ user.voteCount }}</strong></td>
           <td><span class="text-mono">{{ user.createdAt | date:'shortDate' }}</span></td>
           <td>
             <span class="badge" [class.badge-success]="user.isActive" [class.badge-danger]="!user.isActive">

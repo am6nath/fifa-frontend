@@ -182,10 +182,17 @@ export class StatisticsComponent implements OnInit, OnDestroy {
   createChart(): void {
     if (this.chart) {
       this.chart.destroy();
+      this.chart = null;
     }
 
     const canvas = document.getElementById('resultsChart') as HTMLCanvasElement;
     if (!canvas) return;
+
+    // Check and destroy any existing chart bound to the canvas element
+    const existingChart = Chart.getChart(canvas);
+    if (existingChart) {
+      existingChart.destroy();
+    }
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;

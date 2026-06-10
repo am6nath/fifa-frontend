@@ -4,7 +4,7 @@ export interface AuditLog {
   userName: string;
   action: string;
   entityName: string;
-  details: string;
+  description: string;
   ipAddress: string;
   createdAt: string;
 }
